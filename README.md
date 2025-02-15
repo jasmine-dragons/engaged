@@ -34,3 +34,37 @@ Tech Stack:
 - Evaluation System
   - Transcript of meeting/script -> feed into OpenAI or Perplexity and get qualitative feedback
   - Voice Performance APIs -> get quantitative metrics (https://www.voicebase.com/developer-api-for-speech-analytics/)
+
+## Development
+
+For the backend:
+
+1. Setup `.env`.
+
+1. Install dependencies.
+
+   ```sh
+   $ cd backend/
+   $ pip install -r requirements.txt
+   ```
+
+1. Then start the backend server:
+
+   ```sh
+   $ uvicorn main:app --reload
+   ```
+
+For the frontend:
+
+1. Install dependencies.
+
+   ```sh
+   $ cd client/
+   $ npm install
+   ```
+
+1. Start the Next.js development server:
+
+   ```sh
+   $ npm run dev
+   ```
