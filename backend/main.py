@@ -1,138 +1,212 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import os
-from datetime import datetime, timedelta
-from zoomus import ZoomClient
-from dotenv import load_dotenv
-import uvicorn
-from agents.student_agent import StudentAgentManager
-from agents.zoom_bot_manager import ZoomBotManager
-from agents.speech_to_text import SpeechToTextManager
+import json
+import hmac
+import hashlib
+from collections import defaultdict
+from typing import Optional, Dict, Any, Union
+
+import websockets
 import asyncio
+from fastapi import FastAPI, Request, HTTPException
+from pydantic import BaseModel
+import uvicorn
 
-# Load environment variables
-load_dotenv()
+# Load configuration
+with open('data/rtms_credentials.json') as f:
+    config = json.load(f)
 
-# Initialize FastAPI app
-app = FastAPI(title="AI Student Practice Platform")
+ZOOM_SECRET_TOKEN = config['Zoom_Webhook_Secret_Token'][0]['token']
+# Using the first set of credentials as default, but you might want to implement credential selection logic
+CLIENT_SECRET = config['auth_credentials'][0]['client_secret']
 
-# Initialize managers
-zoom_client = ZoomClient(
-    api_account_id=os.getenv("ZOOM_ACCOUNT_ID"),
-    client_id=os.getenv("ZOOM_CLIENT_ID"),
-    client_secret=os.getenv("ZOOM_CLIENT_SECRET")
-)
+# Track active connections
+active_connections = defaultdict(dict)
 
-zoom_bot_manager = ZoomBotManager(
-    api_key=os.getenv("ZOOM_API_KEY"),
-    api_secret=os.getenv("ZOOM_API_SECRET"),
-    account_id=os.getenv("ZOOM_ACCOUNT_ID")
-)
+app = FastAPI()
 
-student_manager = StudentAgentManager()
+class URLValidationResponse(BaseModel):
+    plainToken: str
+    encryptedToken: str
 
-class PracticeSessionConfig(BaseModel):
-    number_of_students: int
-    student_avatar_types: list[str]
-    session_duration_minutes: int = 60
+class StandardResponse(BaseModel):
+    status: str
 
-class MeetingResponse(BaseModel):
-    join_url: str
-    meeting_id: str
-    password: str
-    host_key: str
-    config: PracticeSessionConfig
+class RTMSPayload(BaseModel):
+    event: Optional[str]
+    payload: Optional[Dict[str, Any]]
 
-async def handle_teacher_speech(text: str, meeting_id: str):
-    """Handle converted speech from teacher"""
+def generate_signature(client_id: str, meeting_uuid: str, stream_id: str, secret: str) -> str:
+    """Generate HMAC signature for RTMS authentication."""
+    message = f"{client_id},{meeting_uuid},{stream_id}"
+    return hmac.new(
+        secret.encode(),
+        message.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+async def connect_to_media_websocket(
+    endpoint: str,
+    client_id: str,
+    meeting_uuid: str,
+    stream_id: str,
+    media_type: str
+) -> None:
+    """Connect to the RTMS media WebSocket server."""
+    connection_id = f"{meeting_uuid}_{stream_id}_{media_type}"
+    
+    # Close existing media connection if any
+    if connection_id in active_connections:
+        await active_connections[connection_id]['ws'].close()
+        del active_connections[connection_id]
+
     try:
-        # Get responses from all student agents
-        responses = await student_manager.broadcast_message(text)
-        
-        # Send each response to the Zoom chat
-        for response in responses:
-            student_name = response["student_name"]
-            message = response["response"]
-            await zoom_bot_manager.send_chat_message(
-                meeting_id=meeting_id,
-                student_name=student_name,
-                message=message
-            )
-    except Exception as e:
-        print(f"Error handling teacher speech: {str(e)}")
-
-@app.post("/create-practice-session", response_model=MeetingResponse)
-async def create_practice_session(config: PracticeSessionConfig):
-    try:
-        # Initialize student agents
-        student_manager.initialize_students(
-            number_of_students=config.number_of_students,
-            avatar_types=config.student_avatar_types
-        )
-
-        # Get user information (first user in the account)
-        user_list_response = zoom_client.user.list()
-        user_list = user_list_response.json()
-        if not user_list.get('users'):
-            raise HTTPException(status_code=500, detail="No users found in Zoom account")
-        
-        user_id = user_list['users'][0]['id']
-        
-        # Create a Zoom meeting
-        meeting_response = zoom_client.meeting.create(
-            user_id=user_id,
-            topic=f"AI Student Practice Session ({config.number_of_students} students)",
-            type=2,  # Scheduled meeting
-            start_time=datetime.utcnow() + timedelta(minutes=1),
-            duration=config.session_duration_minutes,
-            settings={
-                "host_video": True,
-                "participant_video": True,
-                "join_before_host": True,
-                "mute_upon_entry": False,
-                "waiting_room": False,
-                "meeting_authentication": False
+        async with websockets.connect(endpoint, ssl=None) as ws:
+            active_connections[connection_id] = {'ws': ws}
+            
+            media_signature = generate_signature(client_id, meeting_uuid, stream_id, CLIENT_SECRET)
+            handshake_message = {
+                "msg_type": "DATA_HAND_SHAKE_REQ",
+                "protocol_version": 1,
+                "meeting_uuid": meeting_uuid,
+                "rtms_stream_id": stream_id,
+                "signature": media_signature,
+                "payload_encryption": False
             }
-        )
-        
-        meeting_details = meeting_response.json()
-        meeting_id = meeting_details.get("id")
-        
-        if not meeting_id:
-            raise HTTPException(status_code=500, detail="Failed to create Zoom meeting")
+            await ws.send(json.dumps(handshake_message))
 
-        # Create bot participants for each student
-        student_names = [f"Student_{i+1}" for i in range(config.number_of_students)]
-
-        print(student_names)
-
-        await zoom_bot_manager.create_bot_participants(str(meeting_id), student_names)
-        print("GOT HERE")
-
-        # Initialize speech-to-text manager
-        stt_manager = SpeechToTextManager(
-            on_text_callback=lambda text: handle_teacher_speech(text, str(meeting_id))
-        )
-        await stt_manager.start_listening(str(meeting_id))
-
-        # Join meeting with all bot participants
-        for student_name in student_names:
-            await zoom_bot_manager.join_meeting(str(meeting_id), student_name)
-
-        return MeetingResponse(
-            join_url=meeting_details.get("join_url"),
-            meeting_id=str(meeting_id),
-            password=meeting_details.get("password", ""),
-            host_key=meeting_details.get("h323_password", ""),
-            config=config
-        )
+            async for message in ws:
+                data = json.loads(message)
+                # Handle media data here
+                print(f"Received {media_type} data:", data)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"{media_type} WebSocket error: {e}")
+    finally:
+        if connection_id in active_connections:
+            del active_connections[connection_id]
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+async def connect_to_rtms_websocket(
+    client_id: str,
+    meeting_uuid: str,
+    stream_id: str,
+    server_url: str
+) -> None:
+    """Connect to the RTMS signaling WebSocket server."""
+    connection_id = f"{meeting_uuid}_{stream_id}"
+    
+    # Close existing connection if any
+    if connection_id in active_connections:
+        await active_connections[connection_id]['ws'].close()
+        del active_connections[connection_id]
+
+    try:
+        async with websockets.connect(server_url, ssl=None) as ws:
+            active_connections[connection_id] = {'ws': ws}
+            
+            signature = generate_signature(client_id, meeting_uuid, stream_id, CLIENT_SECRET)
+            handshake_message = {
+                "msg_type": "SIGNALING_HAND_SHAKE_REQ",
+                "protocol_version": 1,
+                "meeting_uuid": meeting_uuid,
+                "rtms_stream_id": stream_id,
+                "signature": signature
+            }
+            await ws.send(json.dumps(handshake_message))
+
+            async for message in ws:
+                data = json.loads(message)
+                
+                if data['msg_type'] == "SIGNALING_HAND_SHAKE_RESP":
+                    if data['status_code'] == "STATUS_OK":
+                        media_urls = data['media_server']['server_urls']
+                        
+                        # Connect to all available media endpoints
+                        for media_type, url in media_urls.items():
+                            asyncio.create_task(
+                                connect_to_media_websocket(
+                                    url,
+                                    client_id,
+                                    meeting_uuid,
+                                    stream_id,
+                                    media_type
+                                )
+                            )
+                
+                elif data['msg_type'] == "STREAM_STATE_UPDATE":
+                    if data['state'] == "TERMINATED":
+                        await ws.close()
+                        if connection_id in active_connections:
+                            del active_connections[connection_id]
+                        break
+                
+                elif data['msg_type'] == "KEEP_ALIVE_REQ":
+                    response = {
+                        "msg_type": "KEEP_ALIVE_RESP",
+                        "timestamp": int(asyncio.get_event_loop().time() * 1000)
+                    }
+                    await ws.send(json.dumps(response))
+
+    except Exception as e:
+        print(f"RTMS WebSocket error: {e}")
+    finally:
+        if connection_id in active_connections:
+            del active_connections[connection_id]
+
+@app.post("/", response_model=Union[URLValidationResponse, StandardResponse])
+async def webhook_handler(request: Request):
+    """Handle incoming Zoom webhooks."""
+    data = await request.json()
+    event = data.get('event')
+    payload = data.get('payload', {})
+
+    # Handle Zoom Webhook validation
+    if event == 'endpoint.url_validation' and payload.get('plainToken'):
+        print('Received URL validation request:', {
+            'event': event,
+            'plainToken': payload['plainToken']
+        })
+
+        hash_for_validate = hmac.new(
+            ZOOM_SECRET_TOKEN.encode(),
+            payload['plainToken'].encode(),
+            hashlib.sha256
+        ).hexdigest()
+
+        response = URLValidationResponse(
+            plainToken=payload['plainToken'],
+            encryptedToken=hash_for_validate
+        )
+        
+        print('Sending URL validation response:', response.dict())
+        return response
+
+    # Handle RTMS start event
+    if (payload.get('event') == 'meeting.rtms.started' and 
+        payload.get('payload', {}).get('object')):
+        
+        client_id = data.get('clientId')
+        meeting_data = payload['payload']['object']
+        meeting_uuid = meeting_data.get('meeting_uuid')
+        rtms_stream_id = meeting_data.get('rtms_stream_id')
+        server_urls = meeting_data.get('server_urls')
+
+        if all([client_id, meeting_uuid, rtms_stream_id, server_urls]):
+            asyncio.create_task(
+                connect_to_rtms_websocket(
+                    client_id,
+                    meeting_uuid,
+                    rtms_stream_id,
+                    server_urls
+                )
+            )
+
+    return StandardResponse(status="ok")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up connections on shutdown."""
+    for connections in active_connections.values():
+        if 'ws' in connections:
+            await connections['ws'].close()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
