@@ -1,0 +1,50 @@
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+.card:not(.selected):hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.selected {
+  border-color: black;
+}
+
+.contents {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imageWrapper {
+  position: relative;
+  height: 150px;
+  width: 100%;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.children {
+  display: flex;
+  margin: -5px;
+  align-items: center;
+}
+.child {
+  border: 5px solid white;
+  border-radius: 50%;
+  position: relative;
+  margin-right: -15px;
+}
+.total {
+  margin-left: 20px;
+  color: rgba(0, 0, 0, 0.5);
+}

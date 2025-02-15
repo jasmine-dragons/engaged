@@ -1,10 +1,56 @@
-.src {
-  border-radius: 50%;
-  margin-right: -20px;
-  border: 5px solid white;
+.bottom {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  align-items: center;
 }
 
-.children {
+.button {
   display: flex;
-  flex-direction: row-reverse;
+  height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 20px;
+  background-color: black;
+  background-image: linear-gradient(to bottom, #333, black);
+  color: white;
+  border-radius: 10px;
+}
+.button:disabled {
+  background-image: none;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.gridIsh {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  /* align-items: flex-start; */
+}
+.classrooms {
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+.count {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.spinner {
+  border: 3px solid transparent;
+  border-radius: 50%;
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-top-color: white;
+  border-right-color: white;
+  margin-left: -5px;
+  animation: spin 0.5s infinite linear;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

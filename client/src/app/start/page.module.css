@@ -1,0 +1,17 @@
+.button {
+  display: flex;
+  padding: 10px 20px;
+  background-color: black;
+  background-image: linear-gradient(to bottom, #333, black);
+  color: white;
+  border-radius: 10px;
+  align-self: flex-start;
+}
+
+.zoomWrapper {
+  height: 70vh;
+}
+
+.container button {
+  border: 1px solid red;
+}
