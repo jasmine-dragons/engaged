@@ -1,10 +1,11 @@
-const CONFIG = {
+export const CONFIG = {
   STATES: {
     STARTED: "STARTED",
     PAUSED: "PAUSED",
     RESUMED: "RESUMED",
     STOPPED: "STOPPED",
-  },
+    ACTIVE: "ACTIVE",
+  } as const,
   MEDIA: {
     VIDEO_CONFIG: {
       mimeType: "video/webm",
@@ -22,7 +23,15 @@ const CONFIG = {
 };
 
 // Global state
-window.RTMSState = {
+export const RTMSState: {
+  mediaSocket: WebSocket | null;
+  mediaStream: MediaStream | null;
+  sessionState: (typeof CONFIG.STATES)[keyof typeof CONFIG.STATES];
+  isStreamingEnabled: boolean;
+  videoRecorder: MediaRecorder | null;
+  audioRecorder: MediaRecorder | null;
+  recognition: SpeechRecognition | null;
+} = {
   mediaSocket: null,
   mediaStream: null,
   sessionState: CONFIG.STATES.STOPPED,

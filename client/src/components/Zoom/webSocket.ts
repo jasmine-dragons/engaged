@@ -1,6 +1,8 @@
+import { CONFIG, RTMSState } from "./config";
+
 let ws;
 
-function setupWebSocket() {
+export function setupWebSocket() {
   ws = new WebSocket(CONFIG.WS_URL);
 
   ws.onmessage = function (event) {
@@ -26,11 +28,8 @@ function setupWebSocket() {
   };
 }
 
-// Only expose what's needed
-window.setupWebSocket = setupWebSocket;
-
-class WebSocketHandler {
-  static async setupWebSocket(serverUrl) {
+export class WebSocketHandler {
+  static async setupWebSocket(serverUrl: string) {
     let wsUrl = serverUrl;
     if (wsUrl.includes("replit.app")) {
       wsUrl = `ws://${CONFIG.WS_ENDPOINTS.DEFAULT_HOST}:${CONFIG.WS_ENDPOINTS.DEFAULT_PORT}`;

@@ -1,87 +1,60 @@
-class APIHandler {
-  static async validateWebhook() {
-    try {
-      const webhookUrl = document.getElementById("webhookUrl").value;
-      UIController.addSystemLog("Webhook", "Validation request sent", {
-        url: webhookUrl,
-      });
+import { MediaHandler } from "./mediaHandler";
+import { UIController } from "./uiController";
 
-      const response = await fetch("/api/validate-webhook", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ webhookUrl }),
-      });
+export let validatedWebhookUrl: string | null = null;
+let lastWebhookPayload: unknown;
 
-      const data = await response.json();
+export class APIHandler {
+  static async validateWebhook(webhookUrl: string) {
+    const response = await fetch("/api/validate-webhook", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ webhookUrl }),
+    });
 
-      if (data.success) {
-        UIController.addSystemLog("Webhook", "Validation successful");
-        // Enable the start meeting button
-        document.getElementById("sendBtn").disabled = false;
-        // Store the validated URL for later use
-        window.validatedWebhookUrl = webhookUrl;
-      } else {
-        UIController.addSystemLog("Webhook", "Validation failed", {
-          error: data.error,
-        });
-        document.getElementById("sendBtn").disabled = true;
-        window.validatedWebhookUrl = null;
-      }
-    } catch (error) {
-      console.error("Validation error:", error);
-      UIController.addSystemLog("Webhook", "Validation error", {
-        error: error.message,
-      });
-      document.getElementById("sendBtn").disabled = true;
-      window.validatedWebhookUrl = null;
+    const data = await response.json();
+
+    if (data.success) {
+      // Store the validated URL for later use
+      validatedWebhookUrl = webhookUrl;
     }
   }
 
   static async sendWebhook(isNewMeeting = true) {
-    try {
-      const webhookUrl =
-        window.validatedWebhookUrl ||
-        document.getElementById("webhookUrl").value;
-      UIController.addSignalingLog("Sending Meeting Start Request", {
+    const webhookUrl = validatedWebhookUrl;
+    if (!webhookUrl) {
+      return;
+    }
+
+    // Always send through our server endpoint
+    const response = await fetch("/api/send-webhook", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         webhookUrl,
-      });
+        isNewMeeting,
+        existingPayload: isNewMeeting ? null : lastWebhookPayload,
+      }),
+    });
 
-      // Always send through our server endpoint
-      const response = await fetch("/api/send-webhook", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          webhookUrl,
-          isNewMeeting,
-          existingPayload: isNewMeeting ? null : window.lastWebhookPayload,
-        }),
-      });
+    const data = await response.json();
 
-      const data = await response.json();
-
-      if (data.success) {
-        if (isNewMeeting) {
-          // Store the successful payload for future RTMS starts
-          window.lastWebhookPayload = data.sent;
-        }
-        await this.handleWebhookResponse(data, webhookUrl);
-      } else {
-        throw new Error(data.error || "Failed to get webhook payload");
+    if (data.success) {
+      if (isNewMeeting) {
+        // Store the successful payload for future RTMS starts
+        lastWebhookPayload = data.sent;
       }
-    } catch (error) {
-      UIController.addSignalingLog("Meeting Start Error", {
-        error: error.message,
-      });
-      console.error("Send webhook error:", error);
-      document.getElementById("sendBtn").disabled = true;
+      await this.handleWebhookResponse(data, webhookUrl);
+    } else {
+      throw new Error(data.error || "Failed to get webhook payload");
     }
   }
 
-  static async handleWebhookResponse(payload, webhookUrl) {
+  static async handleWebhookResponse(payload: Payload, webhookUrl: string) {
     if (
       payload.success &&
       payload.sent?.payload?.payload?.object?.server_urls
@@ -92,9 +65,13 @@ class APIHandler {
       await MediaHandler.startMediaStream(
         payload.sent.payload.payload.object.server_urls
       );
-    } else {
-      UIController.addSignalingLog("Meeting Start Failed", payload);
-      document.getElementById("sendBtn").disabled = true;
     }
   }
 }
+
+export type Payload =
+  | {
+      success: true;
+      sent?: { payload?: { payload?: { object?: { server_urls: string } } } };
+    }
+  | { success: false };

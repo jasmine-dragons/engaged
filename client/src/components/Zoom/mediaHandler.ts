@@ -1,5 +1,9 @@
-class MediaHandler {
-  static async startMediaStream(serverUrl) {
+import { CONFIG, RTMSState } from "./config";
+import { UIController } from "./uiController";
+import { WebSocketHandler } from "./webSocket";
+
+export class MediaHandler {
+  static async startMediaStream(serverUrl: string) {
     console.log("Starting media stream with URL:", serverUrl);
     try {
       UIController.addSignalingLog("Starting Media Stream", { serverUrl });
@@ -23,6 +27,9 @@ class MediaHandler {
 
       await WebSocketHandler.setupWebSocket(serverUrl);
     } catch (error) {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
       UIController.addSignalingLog("Media Stream Error", {
         error: error.message,
       });
@@ -31,8 +38,7 @@ class MediaHandler {
     }
   }
 
-  static async setupVideoDisplay() {
-    const mediaVideo = document.getElementById("mediaVideo");
+  static async setupVideoDisplay(mediaVideo: HTMLVideoElement) {
     mediaVideo.srcObject = RTMSState.mediaStream;
     await mediaVideo
       .play()
@@ -168,10 +174,10 @@ class MediaHandler {
 
   static stopRecording() {
     if (RTMSState.videoRecorder?.state !== "inactive") {
-      RTMSState.videoRecorder.stop();
+      RTMSState.videoRecorder?.stop();
     }
     if (RTMSState.audioRecorder?.state !== "inactive") {
-      RTMSState.audioRecorder.stop();
+      RTMSState.audioRecorder?.stop();
     }
   }
 

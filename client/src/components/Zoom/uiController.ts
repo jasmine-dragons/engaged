@@ -1,10 +1,16 @@
-class UIController {
+import { APIHandler, validatedWebhookUrl } from "./api";
+import { RTMSState, CONFIG } from "./config";
+import { MediaHandler } from "./mediaHandler";
+import { WebSocketHandler } from "./webSocket";
+
+let currentMeetingId: string | null = null; // Initialize meeting ID storage
+let lastWebhookPayload: string | null = null; // Store the last webhook payload
+
+export class UIController {
   static init() {
     this.attachEventListeners();
     // Initialize button states
     this.resetUIState();
-    window.currentMeetingId = null; // Initialize meeting ID storage
-    window.lastWebhookPayload = null; // Store the last webhook payload
     console.log("UI Controller initialized");
   }
 
@@ -27,7 +33,7 @@ class UIController {
       .addEventListener("click", () => this.handleStop());
     document.getElementById("startRtmsBtn").addEventListener("click", () => {
       // Start RTMS button - reuse the last webhook payload
-      if (window.lastWebhookPayload) {
+      if (lastWebhookPayload) {
         APIHandler.sendWebhook(false); // false indicates reuse existing meeting
       } else {
         console.error("No previous meeting payload found");
@@ -221,7 +227,7 @@ class UIController {
 
   static resetUIState() {
     // Enable/disable appropriate buttons
-    document.getElementById("sendBtn").disabled = !window.validatedWebhookUrl;
+    document.getElementById("sendBtn").disabled = !validatedWebhookUrl;
     document.getElementById("pauseBtn").disabled = true;
     document.getElementById("resumeBtn").disabled = true;
     document.getElementById("stopBtn").disabled = true;
@@ -240,8 +246,8 @@ class UIController {
 
     // Clear all stored meeting data
     localStorage.removeItem("currentMeetingId");
-    window.currentMeetingId = null;
-    window.lastWebhookPayload = null; // Clear the stored webhook payload
+    currentMeetingId = null;
+    lastWebhookPayload = null; // Clear the stored webhook payload
 
     // Stop all recordings and streams
     MediaHandler.cleanup();
@@ -268,7 +274,7 @@ class UIController {
     document.getElementById("response").innerHTML = "";
   }
 
-  static handleIncomingMedia(message) {
+  static handleIncomingMedia(message: IncomingMessage) {
     if (message.msg_type === "MEDIA_DATA_VIDEO") {
       this.updateVideoElement(message.content.data);
     } else if (message.msg_type === "MEDIA_DATA_AUDIO") {
@@ -276,7 +282,7 @@ class UIController {
     }
   }
 
-  static updateVideoElement(videoData) {
+  static updateVideoElement(videoData: string) {
     const blob = new Blob(
       [Uint8Array.from(atob(videoData), (c) => c.charCodeAt(0))],
       { type: "video/webm" }
@@ -289,7 +295,7 @@ class UIController {
     mediaVideo.src = videoUrl;
   }
 
-  static updateAudioElement(audioData) {
+  static updateAudioElement(audioData: string) {
     const blob = new Blob(
       [Uint8Array.from(atob(audioData), (c) => c.charCodeAt(0))],
       { type: "audio/webm" }
@@ -302,81 +308,6 @@ class UIController {
     mediaAudio.src = audioUrl;
   }
 
-  static showError(message) {
-    console.error("UI Error:", message);
-    const responseDiv = document.getElementById("response");
-    if (responseDiv) {
-      responseDiv.innerHTML = message;
-    }
-  }
-
-  static addSystemLog(type, message, details = null) {
-    const logsDiv = document.getElementById("system-logs");
-    if (!logsDiv) return;
-
-    console.log("Adding system log:", { type, message, details });
-
-    const entry = document.createElement("div");
-    entry.className = "log-entry system-log";
-
-    if (type === "Signaling") {
-      entry.classList.add("signaling-log");
-      if (details && typeof details.status === "string") {
-        entry.classList.add(details.status.toLowerCase());
-      }
-    }
-
-    const timestamp = new Date().toLocaleTimeString();
-
-    entry.innerHTML = `
-          <div class="log-header">
-              <div class="log-title">
-                  <i class="fas ${
-                    type === "Signaling" ? "fa-signal" : "fa-info-circle"
-                  }"></i>
-                  <span>${type}: ${message}</span>
-              </div>
-              <div class="log-controls">
-                  <span class="log-timestamp">${timestamp}</span>
-                  ${details ? '<i class="fas fa-chevron-down"></i>' : ""}
-              </div>
-          </div>
-          ${
-            details
-              ? `
-          <div class="log-content">
-              <div class="content-wrapper">
-                  <pre>${JSON.stringify(details, null, 2)}</pre>
-              </div>
-          </div>
-          `
-              : ""
-          }
-      `;
-
-    if (details) {
-      const header = entry.querySelector(".log-header");
-      const content = entry.querySelector(".log-content");
-      header.addEventListener("click", () => {
-        const arrow = header.querySelector(".fas");
-        arrow.classList.toggle("fa-chevron-down");
-        arrow.classList.toggle("fa-chevron-up");
-        content.classList.toggle("expanded");
-      });
-    }
-
-    logsDiv.appendChild(entry);
-    logsDiv.scrollTop = logsDiv.scrollHeight;
-  }
-
-  static addSignalingLog(event, details = null) {
-    this.addSystemLog("Signaling", event, {
-      status: "info",
-      timestamp: new Date().toISOString(),
-      ...details,
-    });
-  }
-
   static handleServerStopConfirmation() {
     const validatedUrl = window.validatedWebhookUrl; // Store the current validated URL
     this.resetUIState();
@@ -385,48 +316,44 @@ class UIController {
     console.log("Server stop confirmed, UI reset");
   }
 
-  static async sendWebhook(url, isNewMeeting = true, meetingId = null) {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          newMeeting: isNewMeeting,
-          meetingId: meetingId || window.currentMeetingId,
-        }),
-      });
+  static async sendWebhook(
+    url: string,
+    isNewMeeting = true,
+    meetingId: string | null = null
+  ) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newMeeting: isNewMeeting,
+        meetingId: meetingId || currentMeetingId,
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // Only store new meeting ID if it's a new meeting
-      if (isNewMeeting && data.meetingId) {
-        localStorage.setItem("currentMeetingId", data.meetingId);
-        window.currentMeetingId = data.meetingId;
-      }
-
-      this.addSignalingLog("Webhook sent", data);
-
-      // After webhook validation, setup WebSocket
-      await WebSocketHandler.setupWebSocket(url);
-      // After WebSocket and signaling are connected, start media stream
-      await MediaHandler.startMediaStream(url);
-      // Update button states
-      this.updateButtonStates(true);
-    } catch (error) {
-      console.error("Send webhook error:", error);
-      this.showError(`Failed to send webhook: ${error.message}`);
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+
+    // Only store new meeting ID if it's a new meeting
+    if (isNewMeeting && data.meetingId) {
+      localStorage.setItem("currentMeetingId", data.meetingId);
+      currentMeetingId = data.meetingId;
+    }
+
+    // After webhook validation, setup WebSocket
+    await WebSocketHandler.setupWebSocket(url);
+    // After WebSocket and signaling are connected, start media stream
+    await MediaHandler.startMediaStream(url);
+    // Update button states
+    this.updateButtonStates(true);
   }
 
-  static storeMeetingId(meetingId) {
-    window.currentMeetingId = meetingId;
+  static storeMeetingId(meetingId: string) {
+    currentMeetingId = meetingId;
     console.log("Stored meeting ID:", meetingId);
   }
 
@@ -693,3 +620,8 @@ function handleMessage(message) {
 function handleSignalingEvent(data) {
   addEventLog(data);
 }
+
+export type IncomingMessage = {
+  msg_type: "MEDIA_DATA_VIDEO" | "MEDIA_DATA_AUDIO";
+  content: { data: string };
+};
