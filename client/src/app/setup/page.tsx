@@ -6,6 +6,7 @@ import { Student } from "@/components/Student";
 import { ClassroomTemplate, StudentTemplate } from "@/lib/types";
 import childImage from "@/../public/DEMO_CHILD.jpg";
 import { useState } from "react";
+import { startSession } from "./actions";
 
 const MAX_STUDENTS = 5;
 const students: StudentTemplate[] = [
@@ -48,6 +49,8 @@ const classrooms: ClassroomTemplate[] = [
 export default function Setup() {
   const [selection, setSelection] = useState<Record<string, number>>({});
   const totalSelected = Object.values(selection).reduce((a, b) => a + b, 0);
+
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className={styles.container}>
@@ -113,8 +116,19 @@ export default function Setup() {
         <button
           className={styles.button}
           type="button"
-          disabled={totalSelected === 0 || totalSelected > MAX_STUDENTS}
+          disabled={
+            totalSelected === 0 || totalSelected > MAX_STUDENTS || loading
+          }
+          onClick={() => {
+            setLoading(true);
+            startSession(
+              Object.entries(selection).flatMap(([personality, count]) =>
+                Array.from({ length: count }, () => personality)
+              )
+            );
+          }}
         >
+          {loading ? <span className={styles.spinner} /> : null}
           Next
         </button>
       </div>
