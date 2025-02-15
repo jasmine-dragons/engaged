@@ -1,4 +1,8 @@
-# 🌲 TreeHacks 2025: AI Classroom Simulation (Training Teachers to Teach using tech)
+# 🌲 TreeHacks 2025: AI Classroom Simulation
+
+_Training Teachers to Teach using tech._
+
+![new classroom selection page](docs/select-better-draft.png)
 
 ![classroom selection page](docs/select-draft.png)
 
