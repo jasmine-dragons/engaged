@@ -8,8 +8,11 @@ export default async function Home() {
   return (
     <div className={styles.page}>
       <h1>landing page</h1>
-      <pre>{JSON.stringify(status)}</pre>
-      <Link href="/setup">i'm interest</Link>
+      <p>
+        pages: <Link href="/setup">setup</Link>,{" "}
+        <Link href="/start">start</Link>
+      </p>
+      <pre>from backend: {JSON.stringify(status)}</pre>
     </div>
   );
 }

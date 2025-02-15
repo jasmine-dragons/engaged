@@ -1,0 +1,22 @@
+.container {
+  padding: 80px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  align-items: flex-start;
+}
+
+.heading {
+  font-size: 64px;
+}
+
+.button {
+  display: flex;
+  padding: 10px 20px;
+  background-color: black;
+  background-image: linear-gradient(to bottom, #333, black);
+  color: white;
+  border-radius: 10px;
+}
