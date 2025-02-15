@@ -16,6 +16,16 @@ a {
   text-decoration: none;
 }
 
+button {
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 .blob-wrapper {
   position: relative;
 }

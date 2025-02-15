@@ -1,20 +1,19 @@
 .card {
   border: 1px solid rgba(0, 0, 0, 0.1);
-  background: none;
-  font: inherit;
-  color: inherit;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   overflow: hidden;
   display: flex;
   text-align: left;
   flex-direction: column;
-  cursor: pointer;
   transition: all 0.2s;
 }
-.card:hover {
+.card:not(.selected):hover {
   border-color: rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.selected {
+  border-color: black;
 }
 
 .contents {
