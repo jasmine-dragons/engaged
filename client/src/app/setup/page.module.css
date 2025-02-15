@@ -1,5 +1,5 @@
 .container {
-  padding: 40px;
+  padding: 80px 40px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -28,4 +28,17 @@
   color: white;
   border-radius: 10px;
   cursor: pointer;
+}
+
+.gridIsh {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+.classrooms {
+  grid-template-columns: repeat(auto-fill, 300px);
+}
+
+.count {
+  color: rgba(0, 0, 0, 0.5);
 }

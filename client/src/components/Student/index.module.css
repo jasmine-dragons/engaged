@@ -1,0 +1,22 @@
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pfp {
+  border-radius: 50%;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.description {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+}
