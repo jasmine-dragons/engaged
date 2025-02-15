@@ -20,3 +20,26 @@
   color: rgba(0, 0, 0, 0.5);
   font-size: 14px;
 }
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn {
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.count {
+  font-weight: bold;
+}

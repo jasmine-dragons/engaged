@@ -18,6 +18,11 @@ export function Student({ name, description }: StudentProps) {
       />
       <p className={styles.name}>{name}</p>
       <p className={styles.description}>{description}</p>
+      <div className={styles.counter}>
+        <button className={styles.btn}>&minus;</button>
+        <span className={styles.count}>3</span>
+        <button className={styles.btn}>+</button>
+      </div>
     </div>
   );
 }
