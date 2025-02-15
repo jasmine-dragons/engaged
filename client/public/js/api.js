@@ -4,7 +4,7 @@ class APIHandler {
             const webhookUrl = document.getElementById("webhookUrl").value;
             UIController.addSystemLog('Webhook', 'Validation request sent', { url: webhookUrl });
 
-            const response = await fetch("/api/validate-webhook", {
+            const response = await fetch("http://localhost:9092/api/validate-webhook", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

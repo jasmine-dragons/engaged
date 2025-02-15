@@ -53,8 +53,8 @@ export default function Setup() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.heading}>Set up your classroom.</h1>
+    <div className="container">
+      <h1 className="heading">Set up your classroom.</h1>
       <p>Start with one of our classroom templates.</p>
       <div className={`${styles.gridIsh} ${styles.classrooms}`}>
         {classrooms.map(({ name, students }) => {

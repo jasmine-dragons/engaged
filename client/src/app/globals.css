@@ -39,3 +39,16 @@ button:not(:disabled) {
   background-image: linear-gradient(to right, #0097ff, #ce00ff);
   filter: blur(30px);
 }
+
+.container {
+  padding: 80px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.heading {
+  font-size: 64px;
+}
