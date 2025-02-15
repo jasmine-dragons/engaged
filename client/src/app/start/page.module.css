@@ -20,3 +20,7 @@
   color: white;
   border-radius: 10px;
 }
+
+.zoomWrapper {
+  height: 70vh;
+}
