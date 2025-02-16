@@ -18,7 +18,8 @@ STUDENT_PERSONALITIES = {
         "behavior": "Frequently raises hand, responds positively, shows excitement about learning",
         "interaction_frequency": 0.7,  # High chance of interaction
         "response_style": "Energetic and enthusiastic responses, often volunteers information, asks follow-up questions",
-        "cooldown": 3  # Quick to respond again
+        "cooldown": 3,  # Quick to respond again,
+        "voice_id": "TxYttQ18a6GMHv5emxHd"
     },
     "shy": {
         "name": "Shy Student",
@@ -26,7 +27,8 @@ STUDENT_PERSONALITIES = {
         "behavior": "Rarely volunteers but gives good answers when called upon",
         "interaction_frequency": 0.3,  # Lower chance of interaction
         "response_style": "Brief, quiet responses, speaks only when confident about the answer",
-        "cooldown": 15  # Needs more time between interactions
+        "cooldown": 15,  # Needs more time between interactions
+        "voice_id": "A96RjY2GLQ3jVKjkRglb"
     },
     "distracted": {
         "name": "Distracted Student",
@@ -34,7 +36,8 @@ STUDENT_PERSONALITIES = {
         "behavior": "May ask for repetition, occasionally makes off-topic comments",
         "interaction_frequency": 0.5,  # Medium chance of interaction
         "response_style": "Sometimes off-topic responses, may ask for clarification, occasionally relates to unrelated personal experiences",
-        "cooldown": 5  # Moderate cooldown, might get distracted and speak up again soon
+        "cooldown": 5,  # Moderate cooldown, might get distracted and speak up again soon
+        "voice_id": "9UGJnQaSjBP7pG2dQqjg"
     },
     "analytical": {
         "name": "Analytical Thinker",
@@ -42,7 +45,8 @@ STUDENT_PERSONALITIES = {
         "behavior": "Asks detailed questions, points out inconsistencies, seeks deeper understanding",
         "interaction_frequency": 0.6,  # Medium-high chance of interaction
         "response_style": "Detailed, logical responses, often asks about underlying principles and mechanisms",
-        "cooldown": 8  # Takes time to formulate next thought
+        "cooldown": 8,  # Takes time to formulate next thought
+        "voice_id": "FMBDwjn0TnQbOKpGVlDA"
     }
 }
 
@@ -95,8 +99,7 @@ class StudentBot:
             
             # Format the context message
             context_message = f"""Context:
-Summary of class so far: {transcript['summary']}
-Teacher just said: {transcript['local_transcript']}
+Transcript of class so far:\n {str(transcript)}\n
 
 Respond as your student character would in this situation."""
             
@@ -108,7 +111,7 @@ Behavior: {self.personality['behavior']}
 Response Style: {self.personality['response_style']}
 
 You should respond in a way that reflects your personality. Your responses should be:
-1. Brief (1-2 sentences)
+1. Brief (1-3 sentences)
 2. Natural and conversational
 3. Age-appropriate for a student
 4. Consistent with your personality traits
@@ -138,8 +141,9 @@ Respond with only the verbal response, no additional formatting or explanation."
 class StudentBotManager:
     def __init__(self):
         self.students: List[StudentBot] = []
+        self.current_student: int = 0
     
-    def initialize_students(self, student_configs: List[Dict[str, str]]):
+    def initialize_students(self, student_personalities: List[str]):
         """
         Initialize student bots with specified configurations
         
@@ -152,36 +156,33 @@ class StudentBotManager:
             ]
         """
         self.students = []
-        for config in student_configs:
+        for personality in student_personalities:
             try:
-                student = StudentBot(config["name"], config["personality"])
+                name = f"student_{personality}"
+                student = StudentBot(name, personality)
                 self.students.append(student)
-                print(f"Created student {student.name} with personality {config['personality']}")
+                print("[DEBUG]", f"Created student {student.name} with personality {personality}")
             except Exception as e:
-                print(f"Error creating student with config {config}: {str(e)}")
+                print(f"Error creating student: {str(e)}")
     
-    async def process_teacher_input(self, transcript: Dict[str, str]) -> List[Dict[str, any]]:
-        """
-        Process teacher input and get responses from all students in parallel
-        
-        Args:
-            transcript: Dictionary with 'summary' and 'local_transcript' keys
-            
-        Returns:
-            List of student responses, including non-responses
-        """
+    async def process_teacher_input(self, transcript: List[Dict[str, str]]) -> List[Dict[str, any]]:
         if not self.students:
             raise ValueError("No students initialized. Call initialize_students first.")
             
-        # Create tasks for all students
-        tasks = [
-            student.process_teacher_input(transcript)
-            for student in self.students
-        ]
         
-        # Run all tasks concurrently
-        responses = await asyncio.gather(*tasks)
-        return responses
+        student = self.students[self.current_student]
+        self.current_student = (self.current_student + 1) % len(self.students)
+        response = await student.process_teacher_input(transcript)
+
+        if response["responded"]:
+            return {
+                "text": response["response"],
+                "speaker": student.name,
+                "timestamp": student.last_interaction_time,
+                "voice_id": student.personality["voice_id"]
+            }
+
+        return None
 
 # Example usage:
 async def main():
