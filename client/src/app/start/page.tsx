@@ -38,8 +38,10 @@ export default function Start() {
 
   return (
     <div className="container">
-      <h1 className="heading">Your experience is ready.</h1>
-      <p>Click the link below to join your simulated classroom experience.</p>
+      <h1 className={`heading ${styles.heading}`}>Your experience is ready.</h1>
+      <p className={styles.instruction}>
+        Click the link below to join your simulated classroom experience.
+      </p>
       <div
         className={`${styles.videos} ${sharing ? styles.sharing : styles.grid}`}
         style={{ display: started ? "" : "none" }}

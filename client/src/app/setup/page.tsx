@@ -62,8 +62,10 @@ export default function Setup() {
 
   return (
     <div className="container">
-      <h1 className="heading">Set up your classroom.</h1>
-      <p>Start with one of our classroom templates.</p>
+      <h1 className={`heading ${styles.heading}`}>Set up your classroom.</h1>
+      <p className={styles.instruction}>
+        Start with one of our classroom templates.
+      </p>
       <div className={`${styles.gridIsh} ${styles.classrooms}`}>
         {classrooms.map(({ name, students }) => {
           let selected = true;
@@ -109,8 +111,8 @@ export default function Setup() {
           );
         })}
       </div>
-      <p>Or build your own class of students.</p>
-      <div className={styles.gridIsh}>
+      <p className={styles.or}>Or build your own class of students.</p>
+      <div className={`${styles.gridIsh} ${styles.students}`}>
         {allStudents.map(({ name, description, personality, image }) => (
           <Student
             key={personality}
