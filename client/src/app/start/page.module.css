@@ -110,12 +110,9 @@
   }
 }
 
-.heading {
+.instruction {
   animation: appear 0.5s;
 }
-.instruction {
-  animation: appear 0.5s 0.1s backwards;
-}
 .buttons {
-  animation: appear 0.5s 0.2s backwards;
+  animation: appear 0.5s 0.1s backwards;
 }

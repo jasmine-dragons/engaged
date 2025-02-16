@@ -38,7 +38,7 @@ export default function Start() {
 
   return (
     <div className="container">
-      <h1 className={`heading ${styles.heading}`}>Your experience is ready.</h1>
+      <h1 className="heading">Your experience is ready.</h1>
       <p className={styles.instruction}>
         Click the link below to join your simulated classroom experience.
       </p>
