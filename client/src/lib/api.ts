@@ -15,3 +15,19 @@ export function startSim(
     body: JSON.stringify(config),
   }).then((r) => r.json());
 }
+
+export type HistoricEntry = {
+  analytics: Record<string, number>;
+  audio: string;
+  config: string[];
+  transcript: {
+    speaker: string;
+    text: string;
+    timestamp: string;
+  };
+  user_id: number;
+};
+
+export function getHistory(userId: number): Promise<{ data: HistoricEntry }> {
+  return fetch(`${backendBaseUrl}/history/${userId}`).then((r) => r.json());
+}

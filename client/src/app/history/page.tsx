@@ -1,4 +1,5 @@
 import { HistoryItem } from "@/components/HistoryItem";
+import { getHistory } from "@/lib/api";
 import { Analysis } from "@/lib/types";
 
 const history: Analysis[] = [
@@ -68,7 +69,9 @@ const history: Analysis[] = [
   },
 ];
 
-export default function History() {
+export default async function History() {
+  const { data } = await getHistory(1);
+  console.log(data);
   return (
     <div className="container">
       <h1 className="heading">Past Sessions</h1>
