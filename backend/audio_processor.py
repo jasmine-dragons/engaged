@@ -16,7 +16,7 @@ class AudioProcessor:
         """Store a raw audio chunk"""
         # Save chunk to a temporary file
         print(type(audio_chunk))
-        chunk_filename = f"temp_chunk_{self.chunk_count}.webm"
+        chunk_filename = f"full_audio.wav"
         with open(chunk_filename, 'wb') as f:
             f.write(audio_chunk)
         self.buffer.append(chunk_filename)
@@ -46,8 +46,9 @@ class AudioProcessor:
             print(f"Error transcribing audio: {e}")
             return None
 
-    def get_full_audio(self, output_path="full_audio.webm"):
+    def get_full_audio(self, output_path="full_audio.wav"):
         """Combine all audio chunks using ffmpeg"""
+        return output_path
         if len(self.buffer) == 0:
             return None
             

@@ -2,7 +2,7 @@ import { Personality, WebSocketJsonMessage } from "./api";
 import { encodeWav } from "./wav-encoder";
 
 /** milliseconds between sending chunks of audio */
-const AUDIO_CHUNK_PERIOD = 3000;
+const AUDIO_CHUNK_PERIOD = 5000;
 
 export type Manager = {
   kill(): void;
