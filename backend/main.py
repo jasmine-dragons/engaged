@@ -129,7 +129,7 @@ async def get_analytics():
             "transcript": master_transcript,
             "simulation_id": simulation_id,
             "analytics": analysis, 
-            "audio": encoding,
+            # "audio": encoding,
             "config": [],
         })
 
