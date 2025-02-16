@@ -18,11 +18,7 @@ import requests
 from fastapi import FastAPI, Request
 import uvicorn
 from typing import Dict, List
-from dataclasses import dataclass
-import os
-from dotenv import load_dotenv
-from groq import Groq
-import json
+
 
 
 load_dotenv()
@@ -127,16 +123,15 @@ async def start_sim(request: Request):
     return {"message": "Simulation started"}
 
 @app.get("/history/{user_id}")
-async def get_history():
+async def get_history(user_id: int):
     """Get the session history from MongoDB."""
-    # history = list(sessions.find({"user_id": user_id}))
-    # return {"data": history}
-    return {"message": "Hello World"}
+    history = list(sessions.find({"user_id": user_id}, {'_id': 0}))
+    return {"data": history}
 
 @app.get("/analytics")
 async def get_analytics(encoding): 
     global simulation_id
-    URL = "https://api.voicegain.ai" #/v1/sa/call?page=1&per_page=50>; rel="first",
+    URL = "https://api.voicegain.ai" 
     headers = {
         "Authorization": VOICEGAIN_API_KEY,
     }
