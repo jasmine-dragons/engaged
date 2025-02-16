@@ -56,7 +56,12 @@ Analytics APIs: We wanted to utilize a dedicated API in order to give users anal
 ## What we learned
 
 ## What's next for _engagED_
-
+There are many aspects of engagED that we could improve:
+1) Using a real-world dataset of teacher-student interactions to fine-tune the LLM model would be beneficial to getting more realistic practice for teachers.
+2) Leveraging video analytics to understand expressions and hand-movements of the teacher would be useful for giving them more insightful feedback.
+3) Implementing visual-language models to understand content that is shared via "screenshare" could help provide useful context for the LLM when it is generating feedback.
+4) Creating a feature for teachers to customize the student persona.
+5) Having more agents in the meeting & figuring out how to better implement student-student interactions as well to best simulate the classroom enviorment.
 ---
 
 ### Setup
