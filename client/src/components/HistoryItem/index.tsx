@@ -3,13 +3,15 @@ import { Analysis } from "@/lib/types";
 import Link from "next/link";
 import styles from "./index.module.css";
 import { Stat } from "../Stat";
+import { CSSProperties } from "react";
 
 export type HistoryItemProps = {
   analysis: Analysis;
+  style?: CSSProperties;
 };
-export function HistoryItem({ analysis }: HistoryItemProps) {
+export function HistoryItem({ analysis, style }: HistoryItemProps) {
   return (
-    <Link href="#" className={styles.wrapper}>
+    <Link href="/results" className={styles.wrapper} style={style}>
       <div className={styles.left}>
         <p className={styles.timestamp}>{dateFormat.format(analysis.time)}</p>
         <p className={styles.summary}>{analysis.summary}</p>

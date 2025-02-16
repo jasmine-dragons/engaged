@@ -72,9 +72,15 @@ export default function History() {
   return (
     <div className="container">
       <h1 className="heading">Past Sessions</h1>
-      {history.map((anal) => (
-        <HistoryItem analysis={anal} key={anal.time.toISOString()} />
-      ))}
+      {history
+        .toSorted((a, b) => b.time.getTime() - a.time.getTime())
+        .map((anal, i) => (
+          <HistoryItem
+            analysis={anal}
+            key={anal.time.toISOString()}
+            style={{ animationDelay: `${i * 50}ms` }}
+          />
+        ))}
     </div>
   );
 }
