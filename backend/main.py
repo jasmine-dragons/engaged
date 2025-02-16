@@ -96,6 +96,9 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/start-sim")
 async def start_sim(request: Request):
     """Start the simulation."""
+    global master_transcript
+    master_transcript = []
+
     data = await request.json()
 
     student_personalities = data.get("studentPersonalities")

@@ -14,6 +14,7 @@ export type StatProps = {
   avg: number;
   max: number;
   animate?: boolean;
+  rightAlign?: boolean;
 };
 export function Stat({
   label,
@@ -24,6 +25,7 @@ export function Stat({
   avg,
   max,
   animate = false,
+  rightAlign = false,
 }: StatProps) {
   const [progress, setProgress] = useState(animate ? 0 : 1);
 
@@ -52,7 +54,11 @@ export function Stat({
 
   return (
     <div className={styles.stat}>
-      <span className={styles.label}>{label} </span>
+      <span
+        className={`${styles.label} ${rightAlign ? styles.rightAlign : ""}`}
+      >
+        {label}{" "}
+      </span>
       <span className={styles.measure}>
         <span className={styles.count}>
           {(progress * count).toFixed(fixed)}

@@ -8,7 +8,7 @@ const inter = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Teacher Teacher",
+  title: "EngagED",
   description: "Made with 🌲 for TreeHacks 2025 🥰",
 };
 

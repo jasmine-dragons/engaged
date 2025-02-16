@@ -34,6 +34,7 @@ export function HistoryItem({ analysis, style }: HistoryItemProps) {
             min={100}
             avg={135}
             max={180}
+            rightAlign
           />
           <Stat label="emotion" count={0} fixed={1} min={1} avg={3} max={5} />
           <Stat

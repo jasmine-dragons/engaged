@@ -19,10 +19,11 @@ export default async function Home() {
             engag<strong className={styles.ed}>ed</strong>
           </h1>
           <p className={styles.tagline}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
+            An AI-powered classroom simulator that helps teachers practice
+            real-world classroom management in a risk-free environment. Interact
+            with dynamic student personalities, refine your teaching strategies,
+            and receive real-time feedback—all to build confidence and improve
+            student engagement.
           </p>
           <Image
             src={PersonAtDeskZoom}

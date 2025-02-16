@@ -32,6 +32,10 @@ EngagED responds to natural teacher interactions in a virtual classroom setting,
 
 _Training Teachers to Teach using AI._
 
+![home page](./docs/thubmnail.png)
+
+![results page animation](docs/output.gif)
+
 ![results page](docs/results.png)
 
 ![new classroom selection page](docs/select-better-draft.png)
