@@ -43,11 +43,11 @@ _Our tech stack__
 
 ## Challenges we ran into
 
-Zoom API Issues: We attempted to use the Zoom API to programmatically start meetings with Zoom bots. However, after numerous attempts and insights from Zoom mentors, we realized that the Meeting Bot approach was not viable due to API limitations and planned deprecation.
+Zoom API Issues: We attempted to use the Zoom API to programmatically start meetings with Zoom bots. However, after numerous attempts and insights from Zoom mentors, we realized that the Meeting Bot approach was not viable due to API limitations and planned deprecation. We ended up building our own solution for streaming web and audio to the backend and adding having agents receive this context.
 
-Low-latency Interaction: We had to optimize AI interactions to maintain near-real-time responsiveness, ensuring that the virtual classroom felt immersive and natural.
+Low-latency Interaction: We had to optimize AI interactions to maintain near-real-time responsiveness, ensuring that the virtual classroom felt immersive and natural. We attempted to achieve low-inference at every step possible using the Groq API to speed up Speech-To-Text and Agentic LLM reasoning. We found ElevenLabs API to be quite fast for Text-to-Speech.
 
-Agent Coordination: AI student agents needed to understand each other's context and avoid talking over one another. Synchronization and maintaining conversational order proved to be a complex challenge.
+Agent Coordination: AI student agents needed to understand each other's context and avoid talking over one another. Synchronization and maintaining conversational order proved to be a complex challenge. We used a mixture probabilistic activations for each agent, a cooldown period specific to each agent, and locks to ensure a clean virtual classroom experience.
 
 Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts. 
 
