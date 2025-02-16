@@ -1,14 +1,48 @@
 import os
 from dotenv import load_dotenv
-from typing import List, Dict, Optional
+from typing import List, Dict
 import asyncio
 import random
 from datetime import datetime
-from langchain.chat_models import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
 
+
+from pymongo import MongoClient
+
+
 load_dotenv()
+
+# set up database
+MONGO_URL = os.getenv("MONGO_URL")
+
+client = MongoClient(MONGO_URL)
+
+database = client.get_database("treehacks-2025")
+sessions = database.get_collection("user-sessions")
+
+user_id = 1
+simulation_id = 1139475891
+master_transcript = {"text": "This is a test", 
+                     "speaker": "teacher", 
+                     "timestamp": "12:00:00"
+                     }
+
+encoding = "test_encoding"
+
+database2 = client.get_database("sample-mflix")
+movies = database2.get_collection("movies")
+
+sessions.insert_one({
+        "user_id": user_id,
+        "transcript": master_transcript,
+        "simulation_id": simulation_id,
+        "analytics": {}, 
+        "audio": encoding,
+        "config": [],
+    })
+
+simulation_id += 1
 
 # Personality templates for different student types
 STUDENT_PERSONALITIES = {
