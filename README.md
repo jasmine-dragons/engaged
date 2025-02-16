@@ -26,7 +26,7 @@ EngagED responds to natural teacher interactions in a virtual classroom setting,
 
 ## What we learned
 
-## What's next for Teacher Teacher
+## What's next for EngageED
 
 ---
 
