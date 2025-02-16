@@ -176,17 +176,7 @@ class StudentBotManager:
         self.current_student: int = 0
     
     def initialize_students(self, student_personalities: List[str]):
-        """
-        Initialize student bots with specified configurations
-        
-        Args:
-            student_configs: List of dictionaries with 'name' and 'personality' keys
-            Example: [
-                {"name": "Alice", "personality": "eager"},
-                {"name": "Bob", "personality": "shy"},
-                ...
-            ]
-        """
+        # Create student bots
         self.students = []
         for personality in student_personalities:
             try:

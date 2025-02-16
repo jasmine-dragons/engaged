@@ -32,11 +32,6 @@ sessions = database.get_collection("user-sessions")
 user_id = 1
 simulation_id = 1
 
-master_transcript = {
-    "text": [],
-    "audio_files": None,
-}
-
 VOICEGAIN_API_KEY = os.getenv("VOICEGAIN_API_KEY")
 
 # Initialize Groq client
@@ -60,6 +55,8 @@ async def websocket_endpoint(websocket: WebSocket):
             audio_processor.process_chunk(audio_chunk)
             transcription = await audio_processor.transcribe_latest()
 
+            print("Transcription: ", transcription)
+
             master_transcript.append({
                 "text": transcription,
                 "speaker": "teacher",
@@ -67,13 +64,15 @@ async def websocket_endpoint(websocket: WebSocket):
             })
 
             response = await student_bot_manager.process_teacher_input(master_transcript)
-            if(response):
+            if response:
                 master_transcript.append({
                     "text": response["response"],
                     "speaker": response["speaker"],
-                    "timestamp": datetime.now(),
+                    "timestamp": response["timestamp"],
                 })
+                # print("Response: ", response["response"])
                 audio_stream = text_to_speech(response["text"], response["voice_id"])
+                print("HIIIIIII")
                 await websocket.send_bytes(audio_stream)
     except Exception as e:
         print(f"WebSocket error: {e}")

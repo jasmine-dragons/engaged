@@ -1,3 +1,4 @@
+from cmd import PROMPT
 import os
 from groq import Groq
 from dotenv import load_dotenv
@@ -22,7 +23,7 @@ class AudioProcessor:
 
     async def transcribe_latest(self):
         """Transcribe the latest audio chunk"""
-        if not self.buffer:
+        if len(self.buffer) == 0:
             return None
             
         # Get the latest chunk filename
@@ -31,9 +32,10 @@ class AudioProcessor:
         try:
             # Transcribe using the chunk file
             with open(latest_chunk, "rb") as f:
-                transcription = await self.groq_client.audio.transcriptions.create(
+                transcription = self.groq_client.audio.transcriptions.create(
                     file=(latest_chunk, f.read()),
                     model="distil-whisper-large-v3-en",
+                    prompt="Transcribe the following audio. If you cannot understand the audio, respond with 'I'm sorry, I could not understand the audio.'",
                     response_format="json",
                     language="en",
                     temperature=0.0
