@@ -9,7 +9,7 @@
   font-size: 12px;
 }
 .rightAlign {
-  text-align: right;
+  align-items: flex-end;
 }
 
 .measure {

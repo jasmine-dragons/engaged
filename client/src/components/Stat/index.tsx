@@ -53,12 +53,8 @@ export function Stat({
   }, [animate]);
 
   return (
-    <div className={styles.stat}>
-      <span
-        className={`${styles.label} ${rightAlign ? styles.rightAlign : ""}`}
-      >
-        {label}{" "}
-      </span>
+    <div className={`${styles.stat} ${rightAlign ? styles.rightAlign : ""}`}>
+      <span className={styles.label}>{label} </span>
       <span className={styles.measure}>
         <span className={styles.count}>
           {(progress * count).toFixed(fixed)}
