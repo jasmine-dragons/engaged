@@ -75,6 +75,7 @@ async def handle_audio_chunk(websocket: WebSocket, audio_chunk: bytes):
         audio_stream = text_to_speech(response["text"], response["voice_id"])
         if not running:
             return
+        await websocket.send_json({"type": "about-to-speak", "studentName": response["speaker"]})
         await websocket.send_bytes(audio_stream)
 
 tasks: list[asyncio.Task] = []
@@ -90,6 +91,7 @@ async def websocket_endpoint(websocket: WebSocket):
     start_time = datetime.now()
     tasks = []
     running = True
+    await websocket.send_json({"type": "students", "students": [[x.name, x.type, x.personality] for x in student_bot_manager.students]})
     try:
         while True:
             print(master_transcript)

@@ -1,7 +1,8 @@
+import { Personality, WebSocketJsonMessage } from "./api";
 import { encodeWav } from "./wav-encoder";
 
 /** milliseconds between sending chunks of audio */
-const AUDIO_CHUNK_PERIOD = 3000;
+const AUDIO_CHUNK_PERIOD = 5000;
 
 export type Manager = {
   kill(): void;
@@ -11,7 +12,9 @@ export type Manager = {
 export async function makeManager(
   webcamPreview: HTMLVideoElement,
   screenPreview: HTMLVideoElement,
-  onClose: () => void
+  onClose: () => void,
+  onStudents: (students: [string, string, Personality][]) => void,
+  onSpeak: (studentName: string, speaking: boolean) => void
 ): Promise<Manager> {
   const audioContext = new AudioContext();
 
@@ -32,13 +35,35 @@ export async function makeManager(
     onClose();
   });
 
-  ws.addEventListener("message", async (e: MessageEvent<ArrayBuffer>) => {
-    const audioBuffer = await audioContext.decodeAudioData(e.data);
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioContext.destination);
-    source.start();
-  });
+  let lastSpeaker = "";
+  ws.addEventListener(
+    "message",
+    async (e: MessageEvent<ArrayBuffer | string>) => {
+      if (typeof e.data === "string") {
+        const message: WebSocketJsonMessage = JSON.parse(e.data);
+        switch (message.type) {
+          case "students":
+            onStudents(message.students);
+            break;
+          case "about-to-speak":
+            lastSpeaker = message.studentName;
+            break;
+          default:
+            console.warn("unknown msg", message);
+        }
+      } else {
+        const audioBuffer = await audioContext.decodeAudioData(e.data);
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
+        source.addEventListener("ended", () => {
+          onSpeak(lastSpeaker, false);
+        });
+        source.start();
+        onSpeak(lastSpeaker, true);
+      }
+    }
+  );
 
   const audioStream = await navigator.mediaDevices.getUserMedia({
     audio: true,

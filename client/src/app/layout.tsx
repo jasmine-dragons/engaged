@@ -24,6 +24,7 @@ export default function RootLayout({
           <div className="blob"></div>
         </div>
         <nav className="nav">
+          <Link href="/">Home</Link>
           <Link href="/setup">Get Started</Link>
           <Link href="/history">History</Link>
         </nav>

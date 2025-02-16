@@ -36,10 +36,10 @@ export function HistoryItem({ analysis, style }: HistoryItemProps) {
             max={180}
             rightAlign
           />
-          <Stat label="emotion" count={0} fixed={1} min={1} avg={3} max={5} />
+          <Stat label="emotion" count={4} fixed={1} min={1} avg={3} max={5} />
           <Stat
             label="talk time ratio"
-            count={0}
+            count={80}
             units="%"
             min={60}
             avg={77.5}
