@@ -1,3 +1,4 @@
+from doctest import master
 from typing import Dict
 from fastapi import FastAPI, Request, WebSocket
 from datetime import datetime
@@ -55,6 +56,7 @@ async def websocket_endpoint(websocket: WebSocket):
     start_time = datetime.now()
     try:
         while True:
+            print(master_transcript)
             audio_chunk = await websocket.receive_bytes()
             audio_processor.process_chunk(audio_chunk)
             transcription = await audio_processor.transcribe_latest()

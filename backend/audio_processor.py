@@ -15,6 +15,7 @@ class AudioProcessor:
     def process_chunk(self, audio_chunk):
         """Store a raw audio chunk"""
         # Save chunk to a temporary file
+        print(type(audio_chunk))
         chunk_filename = f"temp_chunk_{self.chunk_count}.webm"
         with open(chunk_filename, 'wb') as f:
             f.write(audio_chunk)
