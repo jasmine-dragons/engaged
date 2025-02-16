@@ -48,36 +48,36 @@ STUDENT_PERSONALITIES = {
         "name": "Excitable Student",
         "traits": "Enthusiastic, energetic, eager to participate, sometimes overly excited",
         "behavior": "Frequently raises hand, responds with high energy, shows great excitement about learning",
-        "interaction_frequency": 0.8,  # Very high chance of interaction
+        "interaction_frequency": 0.7,  # Very high chance of interaction
         "response_style": "Energetic and enthusiastic responses, often speaks quickly and excitedly",
-        "cooldown": 7,  # Very quick to respond again
-        "voice_id": "TxYttQ18a6GMHv5emxHd"  # Enthusiastic young voice
+        "cooldown": 5,  # Very quick to respond again
+        "voice_id": "9UGJnQaSjBP7pG2dQqjg"  # Enthusiastic young voice
     },
     "asshole": {
         "name": "Challenging Student",
         "traits": "Competitive, confrontational, opinionated, challenges authority",
         "behavior": "Frequently disagrees, voices strong opinions, can be disruptive",
-        "interaction_frequency": 0.7,  # High chance of interaction
+        "interaction_frequency": 0.3,  # High chance of interaction
         "response_style": "Confrontational responses, often questions or challenges the teacher",
-        "cooldown": 5,  # Quick to speak up again
+        "cooldown": 15,  # Quick to speak up again
         "voice_id": "A96RjY2GLQ3jVKjkRglb"  # Strong, assertive voice
     },
     "boring": {
         "name": "Reserved Student",
         "traits": "Prefers routine, avoids risks, consistently completes work but lacks creativity",
         "behavior": "Rarely volunteers, gives minimal responses, sticks to basic answers",
-        "interaction_frequency": 0.3,  # Low chance of interaction
+        "interaction_frequency": 0.0,  # Low chance of interaction
         "response_style": "Brief, straightforward responses, rarely elaborates",
-        "cooldown": 15,  # Long time between interactions
-        "voice_id": "9UGJnQaSjBP7pG2dQqjg"  # Monotone voice
+        "cooldown": 5,  # Long time between interactions
+        "voice_id": "TxYttQ18a6GMHv5emxHd"  # Monotone voice
     },
     "normal": {
         "name": "Balanced Student",
         "traits": "Well-rounded, friendly, works well with others",
         "behavior": "Participates regularly, gives thoughtful responses, works well in groups",
-        "interaction_frequency": 0.5,  # Medium chance of interaction
+        "interaction_frequency": 0.0,  # Medium chance of interaction
         "response_style": "Balanced, thoughtful responses with good engagement",
-        "cooldown": 8,  # Moderate time between interactions
+        "cooldown": 15,  # Moderate time between interactions
         "voice_id": "FMBDwjn0TnQbOKpGVlDA"  # Clear, balanced voice
     }
 }
@@ -90,6 +90,7 @@ class StudentBot:
         self.name = name
         self.type = personality_type
         self.personality = STUDENT_PERSONALITIES[personality_type]
+        self.personality_type = personality_type
         self.chat_model = ChatGroq(
             model="llama-3.3-70b-specdec",
             temperature=0.7
@@ -144,7 +145,7 @@ Behavior: {self.personality['behavior']}
 Response Style: {self.personality['response_style']}
 
 You should respond in a way that reflects your personality. Your responses should be:
-1. Brief (1-3 sentences)
+1. Brief (1-2 sentences)
 2. Natural and conversational
 3. Age-appropriate for a student
 4. Consistent with your personality traits
