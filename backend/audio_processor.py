@@ -1,55 +1,95 @@
-import soundfile as sf
-import wave
+from cmd import PROMPT
 import os
 from groq import Groq
 from dotenv import load_dotenv
-import io
-from pydub import AudioSegment
+import subprocess
 
 load_dotenv()
 
 class AudioProcessor:
     def __init__(self):
-        self.buffer = []  # Store AudioSegment objects
+        self.buffer = []  # Store raw audio chunks
         self.groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        self.chunk_count = 0
 
     def process_chunk(self, audio_chunk):
-        """Process a WebM audio chunk and store it"""
-        webm_audio = io.BytesIO(audio_chunk)
-        audio_segment = AudioSegment.from_file(webm_audio, format="webm")
-        self.buffer.append(audio_segment)
+        """Store a raw audio chunk"""
+        # Save chunk to a temporary file
+        chunk_filename = f"temp_chunk_{self.chunk_count}.webm"
+        with open(chunk_filename, 'wb') as f:
+            f.write(audio_chunk)
+        self.buffer.append(chunk_filename)
+        self.chunk_count += 1
 
     async def transcribe_latest(self):
-        """Transcribe the latest audio segment"""
+        """Transcribe the latest audio chunk"""
         if len(self.buffer) == 0:
             return None
             
-        latest_segment = self.buffer[-1]
-        # Export latest segment to temporary file for transcription
-        temp_file = "temp_latest.wav"
-        latest_segment.export(temp_file, format="wav")
+        # Get the latest chunk filename
+        latest_chunk = self.buffer[-1]
         
         try:
-            with open(temp_file, "rb") as f:
-                transcription = await self.groq_client.audio.transcriptions.create(
-                    file=(temp_file, f.read()),
+            # Transcribe using the chunk file
+            with open(latest_chunk, "rb") as f:
+                transcription = self.groq_client.audio.transcriptions.create(
+                    file=(latest_chunk, f.read()),
                     model="distil-whisper-large-v3-en",
+                    prompt="Transcribe the following audio. If you cannot understand the audio, respond with 'I'm sorry, I could not understand the audio.'",
                     response_format="json",
                     language="en",
                     temperature=0.0
                 )
             return transcription.text
-        finally:
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
+        except Exception as e:
+            print(f"Error transcribing audio: {e}")
+            return None
 
-    def get_full_audio(self, output_path="full_audio.wav"):
-        """Combine all audio segments and save to WAV file"""
+    def get_full_audio(self, output_path="full_audio.webm"):
+        """Combine all audio chunks using ffmpeg"""
         if not self.buffer:
             return None
             
-        # Concatenate all audio segments
-        combined = sum(self.buffer[1:], self.buffer[0])
-        # Export to WAV file
-        combined.export(output_path, format="wav")
-        return output_path
+        try:
+            # Create a file listing all chunks
+            concat_file = "concat_list.txt"
+            with open(concat_file, 'w') as f:
+                for chunk_file in self.buffer:
+                    f.write(f"file '{chunk_file}'\n")
+            
+            # Use ffmpeg to concatenate the chunks
+            cmd = [
+                'ffmpeg',
+                '-f', 'concat',
+                '-safe', '0',
+                '-i', concat_file,
+                '-c', 'copy',  # Copy without re-encoding
+                '-y',  # Overwrite output file
+                output_path
+            ]
+            
+            process = subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            
+            if process.returncode != 0:
+                print(f"FFmpeg error: {process.stderr.decode()}")
+                return None
+                
+            return output_path
+            
+        except Exception as e:
+            print(f"Error combining audio chunks: {e}")
+            return None
+            
+        finally:
+            # Clean up temporary files
+            if os.path.exists(concat_file):
+                os.remove(concat_file)
+            for chunk_file in self.buffer:
+                if os.path.exists(chunk_file):
+                    os.remove(chunk_file)
+            self.buffer = []
+            self.chunk_count = 0

@@ -20,8 +20,6 @@ import uvicorn
 from typing import Dict, List
 from analytics import SpeechAnalyzer
 
-
-
 load_dotenv()
 
 # set up database
@@ -33,28 +31,10 @@ client = MongoClient(MONGO_URL)
 database = client.get_database("treehacks-2025")
 sessions = database.get_collection("user-sessions")
 
-database2 = client.get_database("sample-mflix")
-movies = database2.get_collection("movies")
-duration = None
-
-
 user_id = 1
 simulation_id = 1
 
-master_transcript = {
-    "text": [],
-    "audio_files": None,
-}
-
-# Load configuration
-with open('data/rtms_credentials.json') as f:
-    config = json.load(f)
-
-ZOOM_SECRET_TOKEN = config['Zoom_Webhook_Secret_Token'][0]['token']
 VOICEGAIN_API_KEY = os.getenv("VOICEGAIN_API_KEY")
-
-# Using the first set of credentials as default, but you might want to implement credential selection logic
-CLIENT_SECRET = config['auth_credentials'][0]['client_secret']
 
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -79,27 +59,31 @@ async def websocket_endpoint(websocket: WebSocket):
             audio_processor.process_chunk(audio_chunk)
             transcription = await audio_processor.transcribe_latest()
 
+            print("Transcription: ", transcription)
+
             master_transcript.append({
                 "text": transcription,
                 "speaker": "teacher",
                 "timestamp": datetime.now()
             })
 
-            response = student_bot_manager.process_teacher_input(master_transcript)
-            if(response):
+            response = await student_bot_manager.process_teacher_input(master_transcript)
+            if response:
                 master_transcript.append({
                     "text": response["response"],
                     "speaker": response["speaker"],
-                    "timestamp": datetime.now(),
+                    "timestamp": response["timestamp"],
                 })
+                # print("Response: ", response["response"])
                 audio_stream = text_to_speech(response["text"], response["voice_id"])
+                print("HIIIIIII")
                 await websocket.send_bytes(audio_stream)
     except Exception as e:
         print(f"WebSocket error: {e}")
 
     finally:
-        # Save the final combined audio to WAV file
-        final_audio_path = audio_processor.get_full_audio("final_output.wav")
+        # Save the final combined audio to WebM file
+        final_audio_path = audio_processor.get_full_audio("final_output.webm")
         if final_audio_path:
             print(f"Final audio saved as {final_audio_path}")
             end_time = datetime.now()
@@ -109,12 +93,10 @@ async def websocket_endpoint(websocket: WebSocket):
 
         await websocket.close()
 
-
-
 @app.post("/start-sim")
 async def start_sim(request: Request):
     """Start the simulation."""
-    data = request.json()
+    data = await request.json()
 
     student_personalities = data.get("studentPersonalities")
     if not student_personalities:
