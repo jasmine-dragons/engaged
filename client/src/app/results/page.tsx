@@ -1,5 +1,6 @@
 import { Analysis } from "@/lib/types";
 import styles from "./page.module.css";
+import { Stat } from "@/components/Stat";
 
 const result: Analysis = {
   transcript: [
@@ -39,21 +40,58 @@ export default function Results() {
     <div className="container">
       <h1 className="heading">Results</h1>
       <div className={styles.wrapper}>
-        <ul className={styles.transcript}>
-          {result.transcript.map(({ who, what }, i) => (
-            <li
-              className={`${styles.messageItem} ${
-                who ? styles.messageLeft : styles.messageRight
-              }`}
-              style={{ animationDelay: `${i * 50}ms` }}
-              key={i}
-            >
-              {who ? <div className={styles.who} /> : null}
-              <div className={styles.message}>{what}</div>
-            </li>
-          ))}
-        </ul>
+        <div className={styles.transcriptWrapper}>
+          <h2>Transcript</h2>
+          <ul className={styles.transcript}>
+            {result.transcript.map(({ who, what }, i) => (
+              <li
+                className={`${styles.messageItem} ${
+                  who ? styles.messageLeft : styles.messageRight
+                }`}
+                style={{ animationDelay: `${(i + 1) * 50}ms` }}
+                key={i}
+              >
+                {who ? <div className={styles.who} /> : null}
+                <div className={styles.message}>{what}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className={styles.sidebar}>
+          <h2>Stats</h2>
+          <div className={styles.stats}>
+            <Stat
+              label="talk speed"
+              count={result.ratings.talkSpeed}
+              units=" wpm"
+              min={100}
+              avg={135}
+              max={180}
+            />
+            <Stat
+              label="emotion"
+              count={result.ratings.emotion}
+              fixed={1}
+              min={1}
+              avg={3}
+              max={5}
+            />
+            <Stat
+              label="talk time ratio"
+              count={result.ratings.talkTimeRatio}
+              units="%"
+              min={60}
+              avg={77.5}
+              max={90}
+            />
+            <Stat
+              label="filler words"
+              count={result.ratings.fillerWords}
+              min={0}
+              avg={7.5}
+              max={15}
+            />
+          </div>
           <h2>Summary</h2>
           <p>{result.summary}</p>
         </div>

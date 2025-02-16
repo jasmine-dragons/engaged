@@ -4,12 +4,21 @@
   align-items: flex-start;
 }
 
+.transcriptWrapper {
+  flex: 2 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.transcriptWrapper > h2 {
+  animation: appear 0.5s;
+}
+
 .transcript {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  flex: 2 0 0;
+  gap: 10px;
 }
 
 .messageItem {
@@ -25,7 +34,7 @@
   --width: 7.5px;
   background-color: var(--color);
   border-radius: 15px;
-  padding: 15px;
+  padding: 12px 15px;
   max-width: 90%;
   box-sizing: border-box;
 }
@@ -78,6 +87,12 @@
   position: sticky;
   top: 40px;
   animation: appear 0.5s backwards 0.1s;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
 }
 
 @keyframes appear {
