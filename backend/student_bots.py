@@ -46,20 +46,20 @@ load_dotenv()
 STUDENT_PERSONALITIES = {
     "excitable": {
         "name": "Excitable Student",
-        "traits": "Enthusiastic, energetic, eager to participate, sometimes overly excited",
+        "traits": "Enthusiastic, energetic, eager to participate",
         "behavior": "Frequently raises hand, responds with high energy, shows great excitement about learning",
-        "interaction_frequency": 0.7,  # Very high chance of interaction
+        "interaction_frequency": 0.0,  # Very high chance of interaction
         "response_style": "Energetic and enthusiastic responses, often speaks quickly and excitedly",
-        "cooldown": 5,  # Very quick to respond again
+        "cooldown": 15,  # Very quick to respond again
         "voice_id": "9UGJnQaSjBP7pG2dQqjg"  # Enthusiastic young voice
     },
     "asshole": {
         "name": "Challenging Student",
-        "traits": "Competitive, confrontational, opinionated, challenges authority",
-        "behavior": "Frequently disagrees, voices strong opinions, can be disruptive",
-        "interaction_frequency": 0.3,  # High chance of interaction
+        "traits": "Competitive, confrontational, opinionated, challenges authority, but wants to be heard",
+        "behavior": "Needs to be told no, and is just sad deep down",
+        "interaction_frequency": 0.25,  # High chance of interaction
         "response_style": "Confrontational responses, often questions or challenges the teacher",
-        "cooldown": 15,  # Quick to speak up again
+        "cooldown": 5,  # Quick to speak up again
         "voice_id": "A96RjY2GLQ3jVKjkRglb"  # Strong, assertive voice
     },
     "boring": {
@@ -75,7 +75,7 @@ STUDENT_PERSONALITIES = {
         "name": "Balanced Student",
         "traits": "Well-rounded, friendly, works well with others",
         "behavior": "Participates regularly, gives thoughtful responses, works well in groups",
-        "interaction_frequency": 0.0,  # Medium chance of interaction
+        "interaction_frequency": 0.75,  # Medium chance of interaction
         "response_style": "Balanced, thoughtful responses with good engagement",
         "cooldown": 15,  # Moderate time between interactions
         "voice_id": "FMBDwjn0TnQbOKpGVlDA"  # Clear, balanced voice
