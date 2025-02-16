@@ -19,6 +19,26 @@ EngagED simulates a classroom environment where teachers interact with AI-powere
 EngagED responds to natural teacher interactions in a virtual classroom setting, adjusting student behaviors based on teaching strategies. Just like in a real class, students may ask unexpected questions, lose focus, or react differently depending on the teacher’s approach. At the end of each session, EngagED provides a performance dashboard, offering insights into key performance metrics and providing feedback for improvement.
 
 ## How we built it
+_engaged_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below. 
+
+### Design and Wireframing
+![image](https://github.com/user-attachments/assets/dc7576bc-e58f-4868-b769-94d4d9266c97)
+![image](https://github.com/user-attachments/assets/6c10abff-5699-42a9-800c-e3b1f50f03ae)
+![image](https://github.com/user-attachments/assets/53af2792-a776-4cf8-9a06-de68f87da23d)
+![image](https://github.com/user-attachments/assets/f597a2bd-fd5a-44c1-b101-8c8d948f9edc)
+
+### Engineering
+
+![image](https://github.com/user-attachments/assets/e406cdbf-61e2-4f4f-95de-2e75e09ab974)
+_Our tech flow_
+
+![image](https://github.com/user-attachments/assets/678ddf3b-1be3-4b51-9f38-f948ea1f00a8)
+_Client Logic flow_
+
+![image](https://github.com/user-attachments/assets/1756c555-4835-47e7-bdb4-fc44dc4b5589)
+__
+
+
 
 ## Challenges we ran into
 
@@ -30,7 +50,7 @@ EngagED responds to natural teacher interactions in a virtual classroom setting,
 
 ---
 
-_Training Teachers to Teach using AI._
+### Setup
 
 ![home page](./docs/thubmnail.png)
 
