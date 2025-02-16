@@ -27,9 +27,9 @@ load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-client = MongoClient(MONGO_URL)
+mongo_client = MongoClient(MONGO_URL)
 
-database = client.get_database("treehacks-2025")
+database = mongo_client.get_database("treehacks-2025")
 sessions = database.get_collection("user-sessions")
 
 user_id = 1
@@ -130,7 +130,26 @@ async def get_analytics():
 
     analyzer = SpeechAnalyzer(OPENAI_API_KEY)
 
-    analysis = analyzer.analyze(master_transcript, duration)
+#     duration= 1000
+#     master_transcript = [
+#     {"text": "Today so we will discuss the solar system.", 
+#      "speaker": "Teacher", 
+#      "timestamp": "00:00:00"},
+#     {"text": "Okay!", 
+#      "speaker": "Student", 
+#      "timestamp": "00:00:10"},
+#     {"text": "The sun is at the center, and planets orbit around it.", 
+#      "speaker": "Teacher", 
+#      "timestamp": "00:00:20"},
+#     {"text": "Oh, I see lol!", 
+#      "speaker": "Student", 
+#      "timestamp": "00:00:30"}
+# ]
+
+
+    analysis = analyzer.analyze_teacher_speech(master_transcript, duration)
+
+    configs = [x.personality for x in student_bot_manager.students]
 
     sessions.insert_one({
             "user_id": user_id,
@@ -138,8 +157,10 @@ async def get_analytics():
             "simulation_id": simulation_id,
             "analytics": analysis, 
             # "audio": encoding,
-            "config": [],
+            "config": configs,
         })
+
+    simulation_id += 1
 
     return analysis
 

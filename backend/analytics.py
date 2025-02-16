@@ -1,19 +1,20 @@
 import re
 import openai
 from collections import defaultdict
+from openai import OpenAI
 
 FILLER_WORDS = {"um", "uh", "like", "you know", "so", "actually", "basically", "right"}  # Add more if needed
 
 class SpeechAnalyzer:
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, api_key):
+        self.client = OpenAI(api_key=api_key)
     
-    def extract_teacher_speech(self, transcript, teacher_label="Teacher:"):
+    def extract_teacher_speech(self, transcript, teacher_label="Teacher"):
         """Extract only the teacher's speech from a structured transcript."""
         teacher_text = []
-        for line in transcript.split("\n"):
-            if line.startswith(teacher_label):
-                teacher_text.append(line[len(teacher_label):].strip())
+        for entry in transcript:
+            if entry["speaker"] == teacher_label:
+                teacher_text.append(entry.get("text", "").strip())
         return " ".join(teacher_text)
     
     def detect_emotions(self, text):
@@ -92,12 +93,13 @@ client = openai.OpenAI(api_key="sk-proj-NFd_KSZjkgCmfZj8337tyZ6u5r1ppVSDqH5INgoQ
 
 analyzer = SpeechAnalyzer(client)
 
-transcript = """
-Teacher: Today so we will discuss the solar system.
-Student: Okay!
-Teacher: The sun is at the center, and planets orbit around it.
-Student: Oh, I see lol!
-"""
 
-result = analyzer.analyze_teacher_speech(transcript, duration=120)
-print(result)
+# # """
+# # Teacher: Today so we will discuss the solar system.
+# # Student: Okay!
+# # Teacher: The sun is at the center, and planets orbit around it.
+# # Student: Oh, I see lol!
+# # """
+
+# result = analyzer.analyze_teacher_speech(transcript, duration=120)
+# print(result)

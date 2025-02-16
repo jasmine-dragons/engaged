@@ -88,6 +88,7 @@ class StudentBot:
             raise ValueError(f"Invalid personality type: {personality_type}")
         
         self.name = name
+        self.type = personality_type
         self.personality = STUDENT_PERSONALITIES[personality_type]
         self.chat_model = ChatGroq(
             model="llama-3.3-70b-specdec",
