@@ -1,3 +1,4 @@
+import json
 from dotenv import load_dotenv
 import openai
 import librosa
@@ -8,16 +9,16 @@ import re
 from collections import defaultdict
 import wave
 
-load_dotenv()  
+load_dotenv()
 # Define filler words
 FILLER_WORDS = {"um", "uh", "like", "you know", "so", "actually", "basically", "right"}
 
 class SpeechAnalyzer:
     def __init__(self, openai_api_key):
         """Initialize the speech analyzer with OpenAI API key."""
-        self.api_key = openai_api_key  # Store API key as instance variable
-        self.client = openai.OpenAI(api_key=openai_api_key)  # Initialize OpenAI client
-        self.vad = webrtcvad.Vad(3)  # Initialize VAD with aggressiveness level 3
+        self.api_key = openai_api_key
+        self.client = openai.OpenAI(api_key=openai_api_key)
+        self.vad = webrtcvad.Vad(3)
     
     def transcribe_audio(self, audio_path):
         """Transcribe audio using OpenAI Whisper API."""
@@ -65,11 +66,10 @@ class SpeechAnalyzer:
                     word_counts[word] += 1
         return dict(word_counts)
 
-
     def generate_suggestions(self, speech_rate, filler_count):
         """Generate AI-based suggestions using GPT-4."""
         try:
-            prompt = f"""
+            prompt = """
             Provide a 4-5 sentence improvement summary with constructive feedback.
             """
             
@@ -86,17 +86,15 @@ class SpeechAnalyzer:
             print(f"Error generating suggestions: {str(e)}")
             return None
 
-    def analyze(self, audio_path):
+    def analyze(self, audio_path, output_json_path):
         """Main analysis function."""
         try:
-            # Load audio
             import soundfile as sf
             audio, sr = sf.read(audio_path)
             if len(audio.shape) > 1:
-                audio = audio.mean(axis=1)  # Convert to mono if stereo
+                audio = audio.mean(axis=1)
             duration = librosa.get_duration(y=audio, sr=sr)
             
-            # Run analysis
             results = {
                 "transcription": self.transcribe_audio(audio_path),
                 "duration": duration,
@@ -118,6 +116,10 @@ class SpeechAnalyzer:
                     results["speech_rate"], 
                     results["filler_words"])
             
+            # Save results to a JSON file
+            with open(output_json_path, "w", encoding="utf-8") as json_file:
+                json.dump(results, json_file, indent=4, ensure_ascii=False)
+            
             return results
             
         except Exception as e:
@@ -128,19 +130,12 @@ class SpeechAnalyzer:
 if __name__ == "__main__":
     import os
     
-    # Make sure to set your OpenAI API key
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     if not OPENAI_API_KEY:
         raise ValueError("Please set your OPENAI_API_KEY environment variable")
     
     analyzer = SpeechAnalyzer(OPENAI_API_KEY)
-    # Replace with your audio file path
-    results = analyzer.analyze("C:/Users/vadda/vibhahacks/conversation.mp3")
+    results = analyzer.analyze("C:/Users/vadda/vibhahacks/conversation.mp3", "analysis_results.json")
     
     if results:
-        print("\nAnalysis Results:")
-        print(f"Transcription: {results['transcription']}")
-        print(f"Speech Rate: {results['speech_rate']} WPM")
-        print(f"Filler Words: {results['filler_words']}")
-        print(f"Emotions: {results['emotions']}")
-        print(f"\nAI Suggestions:\n{results['suggestions']}")
+        print("\nAnalysis Results saved to analysis_results.json")
