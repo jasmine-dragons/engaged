@@ -63,12 +63,6 @@ Agent Coordination: AI student agents needed to understand each other's context 
 
 ![results page animation](docs/output.gif)
 
-![results page](docs/results.png)
-
-![new classroom selection page](docs/select-better-draft.png)
-
-![classroom selection page](docs/select-draft.png)
-
 ## Development
 
 For the backend:
