@@ -96,3 +96,26 @@
   display: flex;
   gap: 10px;
 }
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.heading {
+  animation: appear 0.5s;
+}
+.instruction {
+  animation: appear 0.5s 0.1s backwards;
+}
+.buttons {
+  animation: appear 0.5s 0.2s backwards;
+}

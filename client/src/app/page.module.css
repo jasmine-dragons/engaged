@@ -2,27 +2,29 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 20px;
-  color: white;
-  animation: dim 2s 1s forwards;
+  max-width: 1200px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 40px;
 }
 
-@keyframes dim {
-  from {
-    background-color: transparent;
-  }
-  to {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+.nav {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hero {
+  flex: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .title {
   font-size: 120px;
   line-height: 1;
   font-weight: normal;
+  animation: appear 0.5s;
 }
 .ed {
   position: relative;
@@ -54,8 +56,23 @@
   }
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.imageBottom {
+  margin: 0 auto;
+  animation: appear 0.5s 0.2s backwards;
+}
+
 .tagline {
-  font-size: 24px;
+  max-width: 600px;
+  font-size: 18px;
+  line-height: 1.3;
+  padding-left: 6px;
+  animation: appear 0.5s 0.1s backwards;
 }
 
 .video {
@@ -65,4 +82,43 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.blobWrapper {
+  position: relative;
+}
+
+.blob {
+  position: absolute;
+  inset: 200px -80px;
+  background-image: linear-gradient(to right, #0097ff, #ce00ff);
+  filter: blur(80px);
+  border-radius: 300px;
+  z-index: -1;
+  transform: rotate(-30deg);
+}
+
+.login {
+  animation: appear 0.5s 0.4s backwards;
+}
+
+.imageRight {
+  animation: appear 0.5s 0.3s backwards;
+}
+
+:global(.blob-wrapper):has(~ .page) {
+  display: none;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
 }

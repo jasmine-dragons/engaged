@@ -3,7 +3,7 @@
 import childImage from "@/../public/DEMO_CHILD.jpg";
 import { makeManager, Manager } from "@/lib/MeetingManager";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { redirect, RedirectType, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 import Image from "next/image";
@@ -38,8 +38,10 @@ export default function Start() {
 
   return (
     <div className="container">
-      <h1 className="heading">Your experience is ready.</h1>
-      <p>Click the link below to join your simulated classroom experience.</p>
+      <h1 className={`heading ${styles.heading}`}>Your experience is ready.</h1>
+      <p className={styles.instruction}>
+        Click the link below to join your simulated classroom experience.
+      </p>
       <div
         className={`${styles.videos} ${sharing ? styles.sharing : styles.grid}`}
         style={{ display: started ? "" : "none" }}
@@ -117,9 +119,7 @@ export default function Start() {
               className="button"
               onClick={async () => {
                 managerRef.current?.kill();
-                setStarted(false);
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                console.log(await getAnalytics());
+                redirect("/results", RedirectType.push);
               }}
             >
               End Meeting
