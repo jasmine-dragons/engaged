@@ -1,18 +1,24 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import styles from "./index.module.css";
-import childImage from "@/../public/DEMO_CHILD.jpg";
 
 export type StudentProps = {
   name: string;
   description: string;
+  image: string | StaticImageData;
   count: number;
   onCount: (count: number) => void;
 };
-export function Student({ name, description, count, onCount }: StudentProps) {
+export function Student({
+  name,
+  description,
+  image,
+  count,
+  onCount,
+}: StudentProps) {
   return (
     <div className={styles.card}>
       <Image
-        src={childImage}
+        src={image}
         alt="child"
         width={80}
         height={80}

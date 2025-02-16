@@ -11,7 +11,9 @@ export default async function Home() {
         muted
         loop
       />
-      <h1 className={styles.title}>Teacher Teacher</h1>
+      <h1 className={styles.title}>
+        engag<strong className={styles.ed}>ed</strong>
+      </h1>
       <p className={styles.tagline}>Predict the unpredictable.</p>
       <Link href="/login" className="button">
         Log In
