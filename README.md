@@ -32,28 +32,42 @@ _engagED_ was built by a mix of haxers from various backgrounds in frontend and 
 ![image](https://github.com/user-attachments/assets/e406cdbf-61e2-4f4f-95de-2e75e09ab974)
 _Our tech flow_
 
+The frontend was build in [React](https://react.dev/) and [Typescript](https://www.typescriptlang.org/) using [Next.js](https://nextjs.org/) as our frontend framework in order to maintain a structured codebase and fast loading times. The backend server was built in [Python](https://www.python.org/) and [FastAPI](https://fastapi.tiangolo.com/), allowing us to utilize a variety APIs such as [ElevenLabs](https://elevenlabs.io/), [OpenAI](https://openai.com/), [Groq](https://groq.com/), and [LangChain](https://www.langchain.com/). A websocket connection was also utilized between the frontend and backend in order to constantly stream audio data to the agents and LLMs, allowing for low latency. The database was created in [MongoDB](https://www.mongodb.com/) in order to store user sessions in a structured manner. 
+
 ![image](https://github.com/user-attachments/assets/678ddf3b-1be3-4b51-9f38-f948ea1f00a8)
-_Client Logic flow_
+_Client logic flow_
+
+Diving deeper into our client logic, there are a lot of moving parts that bring _engagED_ together! We begin with the **teacher** user instructing the virtual class, and the **AI students** listening in. We then utilize OpenAI's [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) in concurrence with Groq in order to convert this instruction to a text transcript. We then feed this transcript back into the AI Agents in order to provide them context and prompt them to chime in if neccesary. Each agent was build with [LangChain Agents](https://python.langchain.com/v0.1/docs/modules/agents/) and Groq to be able to respond to conversation with low latency. Initially, we ran each agent in parallel, but soon realized that this would cause them to talk over one another as they responded to the teacher. Thus, we implemented a round-robin algorithm between each agent and the teacher in order to minimize conflicts. 
+
+Then, we utilize ElvenLabs' [text to speech API](https://elevenlabs.io/docs/api-reference/text-to-speech/convert) in order to convert the agent's conversational input into speech, and played this in the virtual classroom setting. The speech from the teacher is now combined with the latest transcripts and messages from the AI Agents to create a master transcript. This is now used as the context provided to the AI Agents for them to respond to the teacher. 
+
+Once the session is ended, the master transcript is sent to OpenAI to summarize and provide analytics data for teachers. This is then displayed to the teachers in the following page. The data is then stored with their unique session id in MongoDB for retrieval and visibility later.
 
 ![image](https://github.com/user-attachments/assets/1756c555-4835-47e7-bdb4-fc44dc4b5589)
-__
-
+_Our tech stack__
 
 
 ## Challenges we ran into
 
-Zoom API Issues: We attempted to use the Zoom API to programmatically start meetings with Zoom bots. However, after numerous attempts and insights from Zoom mentors, we realized that the Meeting Bot approach was not viable due to API limitations and planned deprecation.
+Zoom API Issues: We attempted to use the Zoom API to programmatically start meetings with Zoom bots. However, after numerous attempts and insights from Zoom mentors, we realized that the Meeting Bot approach was not viable due to API limitations and planned deprecation. We ended up building our own solution for streaming web and audio to the backend and adding having agents receive this context.
 
-Low-latency Interaction: We had to optimize AI interactions to maintain near-real-time responsiveness, ensuring that the virtual classroom felt immersive and natural.
+Low-latency Interaction: We had to optimize AI interactions to maintain near-real-time responsiveness, ensuring that the virtual classroom felt immersive and natural. We attempted to achieve low-inference at every step possible using the Groq API to speed up Speech-To-Text and Agentic LLM reasoning. We found ElevenLabs API to be quite fast for Text-to-Speech.
 
-Agent Coordination: AI student agents needed to understand each other's context and avoid talking over one another. Synchronization and maintaining conversational order proved to be a complex challenge.
+Agent Coordination: AI student agents needed to understand each other's context and avoid talking over one another. Synchronization and maintaining conversational order proved to be a complex challenge. We used a mixture probabilistic activations for each agent, a cooldown period specific to each agent, and locks to ensure a clean virtual classroom experience.
+
+Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts. 
 
 ## Accomplishments that we're proud of
 
 ## What we learned
 
 ## What's next for _engagED_
-
+There are many aspects of engagED that we could improve:
+1) Using a real-world dataset of teacher-student interactions to fine-tune the LLM model would be beneficial to getting more realistic practice for teachers.
+2) Leveraging video analytics to understand expressions and hand-movements of the teacher would be useful for giving them more insightful feedback.
+3) Implementing visual-language models to understand content that is shared via "screenshare" could help provide useful context for the LLM when it is generating feedback.
+4) Creating a feature for teachers to customize the student persona.
+5) Having more agents in the meeting & figuring out how to better implement student-student interactions as well to best simulate the classroom enviorment.
 ---
 
 ### Setup
@@ -61,12 +75,6 @@ Agent Coordination: AI student agents needed to understand each other's context 
 ![home page](./docs/thubmnail.png)
 
 ![results page animation](docs/output.gif)
-
-![results page](docs/results.png)
-
-![new classroom selection page](docs/select-better-draft.png)
-
-![classroom selection page](docs/select-draft.png)
 
 ## Development
 
