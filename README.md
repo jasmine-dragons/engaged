@@ -1,10 +1,18 @@
-# 🌲 TreeHacks 2025: Teacher Teacher - AI-Powered Classroom Simulation for Smarter Teacher Training
+# EngagED - AI-Powered Classroom Simulation for Smarter Teacher Training 👩‍🎓👩🏾‍🎓👨🏻‍🎓
 
 ## Inspiration
-One of the biggest issues in education today is poor communication between teachers and students. The effects of this include poor perfomance for students and feelings of being burntout for teachers. We wanted to build something to address this. 
+Every day, teachers step into classrooms filled with students who have different personalities, learning styles, and challenges. Some students are eager to participate, others are easily distracted, and a few might resist authority altogether. A teacher's ability to navigate these interactions can mean the difference between an engaging classroom and a chaotic one.
+
+Yet, there are few opportunities for educators to practice classroom management in a realistic, risk-free setting. So, we asked ourselves: What if teachers could train for the classroom the way pilots train in flight simulators? Could we create an AI-powered environment where educators could interact with dynamic student personalities, receive real-time feedback, and refine their teaching techniques so that they can accel in the classroom?
+
+That’s how we built EngagED—an interactive classroom simulation that prepares educators for real-world teaching challenges. By leveraging AI-bots that simulate student behaviors and a performance analytics dashboard, EngagED helps teachers develop strong communication skills, manage classroom dynamics, and build confidence—all in a safe, controlled environment.
+
+We believe that if EngagED is implemented in teacher training programs and professional development workshops, it could revolutionize how educators prepare for the modern classroom—leading to more engaged students, less burnout, and stronger learning outcomes across the board. 
 
 ## What it does
+EngagED simulates a classroom environment where teachers interact with AI-powered student personalities, each with unique behaviors, engagement levels, and challenges. The platform allows educators to practice managing real-world classroom dynamics—whether it’s handling a disruptive student, encouraging a quiet learner to participate, or maintaining engagement during a lesson.
 
+EngagED responds to natural teacher interactions in a virtual classroom setting, adjusting student behaviors based on teaching strategies. Just like in a real class, students may ask unexpected questions, lose focus, or react differently depending on the teacher’s approach. At the end of each session, EngagED provides a performance dashboard, offering insights into key performance metrics and providing feedback for improvement. 
 
 ## How we built it
 
