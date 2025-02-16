@@ -2,6 +2,8 @@ import { Analysis } from "@/lib/types";
 import styles from "./page.module.css";
 import { Stat } from "@/components/Stat";
 import { dateFormat } from "@/lib/fmt";
+import { getSimulation } from "@/lib/api";
+import { notFound } from "next/navigation";
 
 const result: Analysis = {
   transcript: [
@@ -37,7 +39,18 @@ const result: Analysis = {
   time: new Date("2024-10-27T10:00:00"),
 };
 
-export default function Results() {
+type ResultsPageProps = {
+  params: Promise<{ simId: string }>;
+};
+export default async function ResultsPage({ params }: ResultsPageProps) {
+  const { simId } = await params;
+  const { data } = await getSimulation(+simId);
+
+  if (!data) {
+    notFound();
+  }
+  console.log(data)
+
   return (
     <div className="container">
       <h1 className="heading">Results</h1>

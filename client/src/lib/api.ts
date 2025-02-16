@@ -34,10 +34,16 @@ export type HistoricEntry = {
 
 export async function getHistory(
   userId: number
-): Promise<{ data: HistoricEntry }> {
+): Promise<{ data: HistoricEntry[] }> {
   return fetch(`${backendBaseUrl}/history/${userId}?_=${Date.now()}`).then(
     (r) => r.json()
   );
+}
+
+export async function getSimulation(
+  simulationId: number
+): Promise<{ data: HistoricEntry | false }> {
+  return fetch(`${backendBaseUrl}/sim/${simulationId}`).then((r) => r.json());
 }
 
 export async function getAnalytics(): Promise<unknown> {

@@ -117,6 +117,12 @@ async def get_history(user_id: int):
     history = list(sessions.find({"user_id": user_id}, {'_id': 0}))
     return {"data": history}
 
+@app.get("/sim/{simulation_id}")
+async def get_sim(simulation_id: int):
+    """Get the simulation by ID from MongoDB."""
+    simulation = list(sessions.find({"simulation_id": simulation_id}, {"_id": 0}))
+    return {"data": simulation[0] if len(simulation) > 0 else False}
+
 @app.get("/analytics")
 async def get_analytics(): 
     global simulation_id
