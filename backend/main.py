@@ -120,14 +120,22 @@ async def get_history(user_id: int):
 @app.get("/analytics")
 async def get_analytics(): 
     global simulation_id
-    # URL = "https://api.voicegain.ai" 
-    # headers = {
-    #     "Authorization": VOICEGAIN_API_KEY,
-    # }
+
 
     analyzer = SpeechAnalyzer(OPENAI_API_KEY)
 
     analysis = analyzer.analyze(master_transcript, duration)
+
+    sessions.insert_one({
+            "user_id": user_id,
+            "transcript": master_transcript,
+            "simulation_id": simulation_id,
+            "analytics": analysis, 
+            # "audio": encoding,
+            "config": [],
+        })
+
+    return analysis
 
     # # start new analytics session
 

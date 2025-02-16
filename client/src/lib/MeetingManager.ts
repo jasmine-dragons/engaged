@@ -1,5 +1,3 @@
-import { backendBaseUrl } from "./api";
-
 /** milliseconds between sending chunks of audio */
 const AUDIO_CHUNK_PERIOD = 3000;
 
@@ -14,7 +12,10 @@ export async function makeManager(
 ): Promise<Manager> {
   const audioContext = new AudioContext();
 
-  const websocket_url = "ws://127.0.0.1:8000/ws";
+  const websocket_url = `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace(
+    "http",
+    "ws"
+  )}/ws`;
   const ws = new WebSocket(websocket_url);
   ws.binaryType = "arraybuffer";
 

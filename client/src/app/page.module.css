@@ -21,26 +21,28 @@
 
 .title {
   font-size: 120px;
-  position: relative;
   line-height: 1;
+  font-weight: normal;
 }
-.title::before {
-  content: "Teacher Teacher";
+.ed {
+  position: relative;
+  font-weight: bold;
+}
+.ed::before {
+  content: "ed";
   position: absolute;
-  left: 0;
-  top: 0;
-  filter: blur(40px);
-  opacity: 0.7;
+  filter: blur(15px);
+  /* opacity: 0.7; */
   z-index: -1;
-  color: transparent;
 }
-.title,
-.title::before {
+.ed,
+.ed::before {
   background-image: linear-gradient(to right, #0097ff, #ce00ff, #0097ff);
   background-size: 600%;
   animation: gradient 30s infinite linear;
   -webkit-background-clip: text;
   background-clip: text;
+  color: transparent;
 }
 
 @keyframes gradient {

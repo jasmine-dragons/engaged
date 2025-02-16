@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 import Image from "next/image";
+import { getAnalytics } from "@/lib/api";
 
 export default function Start() {
   const searchParams = useSearchParams();
@@ -114,9 +115,11 @@ export default function Start() {
             <button
               type="button"
               className="button"
-              onClick={() => {
+              onClick={async () => {
                 managerRef.current?.kill();
                 setStarted(false);
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                console.log(await getAnalytics());
               }}
             >
               End Meeting
