@@ -1,10 +1,12 @@
 "use client";
 
+import childImage from "@/../public/DEMO_CHILD.jpg";
+import { makeManager, Manager } from "@/lib/MeetingManager";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
-import { makeManager, Manager } from "@/lib/MeetingManager";
+import Image from "next/image";
 
 export default function Start() {
   const searchParams = useSearchParams();
@@ -37,18 +39,46 @@ export default function Start() {
     <div className="container">
       <h1 className="heading">Your experience is ready.</h1>
       <p>Click the link below to join your simulated classroom experience.</p>
-      <div className={styles.videos} style={{ display: started ? "" : "none" }}>
+      <div
+        className={`${styles.videos} ${sharing ? styles.sharing : styles.grid}`}
+        style={{ display: started ? "" : "none" }}
+      >
+        {sharing ? (
+          <div className={styles.warning}>You are screen sharing</div>
+        ) : null}
         <video
-          className={styles.video}
-          ref={webcamPreviewRef}
-          playsInline
-        ></video>
-        <video
-          className={styles.video}
+          className={styles.screenShare}
           ref={screenPreviewRef}
           playsInline
           style={{ display: sharing ? "" : "none" }}
         ></video>
+        <div className={styles.people}>
+          <div
+            className={`${styles.person} ${styles.speaking} ${styles.hasVideo}`}
+            data-name="You (Host)"
+          >
+            <video
+              className={styles.video}
+              ref={webcamPreviewRef}
+              playsInline
+            ></video>
+          </div>
+          {Array.from({ length: 4 }, (_, i) => (
+            <div
+              key={i}
+              className={`${styles.person} ${i === 2 ? styles.speaking : ""}`}
+              data-name="John Asshole"
+            >
+              <Image
+                src={childImage}
+                alt="person"
+                width={80}
+                height={80}
+                className={styles.pfp}
+              />
+            </div>
+          ))}
+        </div>
       </div>
       <div className={styles.buttons}>
         {!started ? (
