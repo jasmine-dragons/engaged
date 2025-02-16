@@ -32,7 +32,7 @@ _engagED_ was built by a mix of haxers from various backgrounds in frontend and 
 ![image](https://github.com/user-attachments/assets/e406cdbf-61e2-4f4f-95de-2e75e09ab974)
 _Our tech flow_
 
-The frontend was build in [React](https://react.dev/) and [Typescript](https://www.typescriptlang.org/) using [Next.js](https://nextjs.org/) as our frontend framework in order to maintain a structured codebase and fast loading times. The backend server was built in [Python](https://www.python.org/) and [FastAPI](https://fastapi.tiangolo.com/), allowing us to utilize a variety APIs such as [ElevenLabs](https://elevenlabs.io/), [OpenAI](https://openai.com/), [Groq](https://groq.com/), and [LangChain](https://www.langchain.com/). The database was created in [MongoDB](https://www.mongodb.com/) in order to easily store user sessions in a structured manner. 
+The frontend was build in [React](https://react.dev/) and [Typescript](https://www.typescriptlang.org/) using [Next.js](https://nextjs.org/) as our frontend framework in order to maintain a structured codebase and fast loading times. The backend server was built in [Python](https://www.python.org/) and [FastAPI](https://fastapi.tiangolo.com/), allowing us to utilize a variety APIs such as [ElevenLabs](https://elevenlabs.io/), [OpenAI](https://openai.com/), [Groq](https://groq.com/), and [LangChain](https://www.langchain.com/). A websocket connection was also utilized between the frontend and backend in order to constantly stream audio data to the agents and LLMs, allowing for low latency. The database was created in [MongoDB](https://www.mongodb.com/) in order to store user sessions in a structured manner. 
 
 ![image](https://github.com/user-attachments/assets/678ddf3b-1be3-4b51-9f38-f948ea1f00a8)
 _Client logic flow_
@@ -62,12 +62,6 @@ Agent Coordination: AI student agents needed to understand each other's context 
 ![home page](./docs/thubmnail.png)
 
 ![results page animation](docs/output.gif)
-
-![results page](docs/results.png)
-
-![new classroom selection page](docs/select-better-draft.png)
-
-![classroom selection page](docs/select-draft.png)
 
 ## Development
 
