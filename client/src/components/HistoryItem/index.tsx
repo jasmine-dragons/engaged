@@ -11,7 +11,7 @@ export type HistoryItemProps = {
 };
 export function HistoryItem({ analysis, style }: HistoryItemProps) {
   return (
-    <Link href="/results" className={styles.wrapper} style={style}>
+    <Link href="/results/1139475891" className={styles.wrapper} style={style}>
       <div className={styles.left}>
         <p className={styles.timestamp}>{dateFormat.format(analysis.time)}</p>
         <p className={styles.summary}>{analysis.summary}</p>

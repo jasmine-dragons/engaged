@@ -119,7 +119,7 @@ export default function Start() {
               className="button"
               onClick={async () => {
                 managerRef.current?.kill();
-                redirect("/results", RedirectType.push);
+                redirect("/results/1139475891", RedirectType.push);
               }}
             >
               End Meeting
