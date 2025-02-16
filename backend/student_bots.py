@@ -6,6 +6,7 @@ import random
 from datetime import datetime
 from langchain.chat_models import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_groq import ChatGroq
 
 load_dotenv()
 
@@ -52,8 +53,8 @@ class StudentBot:
         
         self.name = name
         self.personality = STUDENT_PERSONALITIES[personality_type]
-        self.chat_model = ChatOpenAI(
-            model="gpt-4-turbo-preview",
+        self.chat_model = ChatGroq(
+            model="llama-3.3-70b-specdec",
             temperature=0.7
         )
         self.last_interaction_time = datetime.now()
