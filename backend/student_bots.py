@@ -50,7 +50,7 @@ STUDENT_PERSONALITIES = {
         "behavior": "Frequently raises hand, responds with high energy, shows great excitement about learning",
         "interaction_frequency": 0.8,  # Very high chance of interaction
         "response_style": "Energetic and enthusiastic responses, often speaks quickly and excitedly",
-        "cooldown": 2,  # Very quick to respond again
+        "cooldown": 7,  # Very quick to respond again
         "voice_id": "TxYttQ18a6GMHv5emxHd"  # Enthusiastic young voice
     },
     "asshole": {
@@ -59,7 +59,7 @@ STUDENT_PERSONALITIES = {
         "behavior": "Frequently disagrees, voices strong opinions, can be disruptive",
         "interaction_frequency": 0.7,  # High chance of interaction
         "response_style": "Confrontational responses, often questions or challenges the teacher",
-        "cooldown": 4,  # Quick to speak up again
+        "cooldown": 5,  # Quick to speak up again
         "voice_id": "A96RjY2GLQ3jVKjkRglb"  # Strong, assertive voice
     },
     "boring": {
@@ -187,7 +187,7 @@ class StudentBotManager:
             except Exception as e:
                 print(f"Error creating student: {str(e)}")
     
-    async def process_teacher_input(self, transcript: List[Dict[str, str]]) -> List[Dict[str, any]]:
+    async def process_teacher_input(self, transcript: List[Dict[str, str]]) -> Dict[str, any]:
         if not self.students:
             raise ValueError("No students initialized. Call initialize_students first.")
             
