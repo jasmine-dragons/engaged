@@ -2,7 +2,8 @@ import json
 import hmac
 import hashlib
 from collections import defaultdict
-from typing import Optional, Dict, Any, Union
+from typing import BinaryIO, Optional, Dict, Any, Union
+import requests
 import websockets
 import asyncio
 from fastapi import FastAPI, Request, HTTPException
@@ -24,8 +25,18 @@ from groq import Groq
 import uuid
 import wave
 import struct
+import json
+from pydub import AudioSegment
+
+
 
 load_dotenv()
+# storage file 
+
+master_transcript = {
+    "text": [],
+    "audio_files": None,
+}
 
 # Load configuration
 with open('data/rtms_credentials.json') as f:
@@ -37,6 +48,7 @@ CLIENT_SECRET = config['auth_credentials'][0]['client_secret']
 
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+VOICEGAIN_API_KEY = "qHRJ/HoZCoS0ITNOYQo8W+7jObCKZOr6qMozXj5fzBE=" # config['voicegain_credentials'][0]['api_key'] 
 
 # Track active connections
 active_connections = defaultdict(dict)
@@ -176,6 +188,8 @@ class AudioProcessor:
         except Exception as e:
             print(f"Error processing audio chunks: {e}")
             return f"Error: {str(e)}"
+        
+combined_audio = AudioSegment.empty()
 
 async def connect_to_media_websocket(
     endpoint: str,
@@ -185,8 +199,8 @@ async def connect_to_media_websocket(
     media_type: str
 ) -> None:
     """Connect to the RTMS media WebSocket server."""
-    connection_id = f"{meeting_uuid}_{stream_id}_{media_type}"
-
+    connection_id = f"{meeting_uuid}_{stream_id}_{media_type}" 
+    
     # Close existing media connection if any
     if connection_id in active_connections:
         await active_connections[connection_id]['ws'].close()
@@ -223,6 +237,10 @@ async def connect_to_media_websocket(
                         timestamp=content['timestamp'],
                         user_id=content['user_id']
                     )
+
+                    audio_data = base64.b64decode(chunk.data)
+                    audio_segment = AudioSegment.from_file(BytesIO(audio_data), format="wav")
+                    combined_audio += audio_segment
                     
                     if chunks_to_process := audio_processor.add_chunk(chunk):
                         # Process audio chunks in background
@@ -301,6 +319,34 @@ async def connect_to_rtms_websocket(
     finally:
         if connection_id in active_connections:
             del active_connections[connection_id]
+
+@app.get("/analytics")
+async def get_analytics(file: BinaryIO): 
+    URL = "https://api.voicegain.ai" #/v1/sa/call?page=1&per_page=50>; rel="first",
+    headers = {
+        "Authorization": VOICEGAIN_API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    # start new analytics session
+
+    output_buffer = BytesIO()
+    combined_audio.export(output_buffer, format="wav")
+    combined_base64_encoding = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+
+    params = {
+        "source" : {
+            "inline": combined_base64_encoding
+        }
+
+        
+}
+    
+    response = requests.post(URL + "/sa", headers=headers, body=params)
+
+    response = requests.get(URL + "", headers=headers, data=file)
+
+
 
 @app.post("/", response_model=Union[URLValidationResponse, StandardResponse])
 async def webhook_handler(request: Request):
