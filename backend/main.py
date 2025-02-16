@@ -191,6 +191,7 @@ async def get_analytics():
             "analytics": analysis, 
             # "audio": encoding,
             "config": configs,
+            "personalities": [x.type for x in student_bot_manager.students],
             "timestamp": datetime.now(),
         }
     print('INSERT', new_object)

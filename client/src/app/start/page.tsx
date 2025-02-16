@@ -1,6 +1,5 @@
 "use client";
 
-import childImage from "@/../public/DEMO_CHILD.jpg";
 import { makeManager, Manager } from "@/lib/MeetingManager";
 import Link from "next/link";
 import { redirect, RedirectType, useSearchParams } from "next/navigation";

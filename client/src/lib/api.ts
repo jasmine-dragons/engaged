@@ -34,6 +34,7 @@ export type Personality = {
 export type HistoricEntry = {
   analytics: Analytics;
   config: Personality[];
+  personalities?: string[];
   /** Do NOT use since it gets rounded in JS; use `simulation_id_str` instead */
   simulation_id: number;
   simulation_id_str: string;
