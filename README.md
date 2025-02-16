@@ -22,10 +22,10 @@ _engagED_ responds to natural teacher interactions in a virtual classroom settin
 _engagED_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below. 
 
 ### Design and Wireframing
-![image](https://github.com/user-attachments/assets/dc7576bc-e58f-4868-b769-94d4d9266c97)
-![image](https://github.com/user-attachments/assets/6c10abff-5699-42a9-800c-e3b1f50f03ae)
-![image](https://github.com/user-attachments/assets/53af2792-a776-4cf8-9a06-de68f87da23d)
-![image](https://github.com/user-attachments/assets/f597a2bd-fd5a-44c1-b101-8c8d948f9edc)
+<img src="https://github.com/user-attachments/assets/dc7576bc-e58f-4868-b769-94d4d9266c97" alt="drawing" width="500"/>
+<img src="https://github.com/user-attachments/assets/6c10abff-5699-42a9-800c-e3b1f50f03ae" alt="drawing" width="500"/>
+<img src="https://github.com/user-attachments/assets/53af2792-a776-4cf8-9a06-de68f87da23d" alt="drawing" width="500"/>
+<img src="https://github.com/user-attachments/assets/f597a2bd-fd5a-44c1-b101-8c8d948f9edc" alt="drawing" width="500"/>
 
 ### Engineering
 
