@@ -1,0 +1,79 @@
+.wrapper {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.transcript {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 2 0 0;
+}
+
+.messageItem {
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+}
+
+.message {
+  position: relative;
+  --color: #eee;
+  --width: 7.5px;
+  background-color: var(--color);
+  border-radius: 15px;
+  padding: 15px;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+.message::after {
+  content: "";
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  bottom: 0;
+}
+
+.messageLeft .message::after {
+  right: 100%;
+  border-right: var(--width) solid var(--color);
+  margin-right: calc(-1 * var(--width));
+  border-bottom-right-radius: 15px;
+}
+
+.messageRight {
+  justify-content: flex-end;
+}
+.messageRight .message {
+  --color: #2b7fff;
+  color: white;
+}
+.messageRight .message::after {
+  left: 100%;
+  border-left: var(--width) solid var(--color);
+  margin-left: calc(-1 * var(--width));
+  border-bottom-left-radius: 15px;
+}
+
+.who {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.2)
+  );
+  flex: none;
+}
+
+.sidebar {
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: sticky;
+  top: 40px;
+}

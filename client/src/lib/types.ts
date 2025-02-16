@@ -10,3 +10,14 @@ export type ClassroomTemplate = {
   /** List of personalities. */
   students: string[];
 };
+
+export type Analysis = {
+  transcript: { who?: string; what: string }[];
+  summary: string;
+  ratings: {
+    talkSpeed: number;
+    emotion: number;
+    talkTimeRatio: number;
+    fillerWords: number;
+  };
+};
