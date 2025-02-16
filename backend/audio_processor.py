@@ -47,7 +47,7 @@ class AudioProcessor:
 
     def get_full_audio(self, output_path="full_audio.webm"):
         """Combine all audio chunks using ffmpeg"""
-        if not self.buffer:
+        if len(self.buffer) == 0:
             return None
             
         try:
