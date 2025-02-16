@@ -20,7 +20,7 @@ _engagED_ responds to natural teacher interactions in a virtual classroom settin
 
 ## How we built it
 
-_engagED_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below.
+_engagED_ was built by a mix of hackers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below.
 
 ### Design and Wireframing
 
