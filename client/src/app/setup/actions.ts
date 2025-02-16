@@ -1,15 +1,9 @@
 "use server";
 
-import { createPracticeSession } from "@/lib/api";
+import { startSim } from "@/lib/api";
 import { redirect } from "next/navigation";
 
 export async function startSession(personalities: string[]) {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  // await createPracticeSession({
-  //   number_of_students: personalities.length,
-  //   student_avatar_types: personalities,
-  // });
-  redirect(
-    "/start?" + new URLSearchParams({ personalities: personalities.join(",") })
-  );
+  await startSim({ studentPersonalities: personalities });
+  redirect("/start");
 }
