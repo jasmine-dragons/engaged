@@ -20,4 +20,5 @@ export type Analysis = {
     talkTimeRatio: number;
     fillerWords: number;
   };
+  time: Date;
 };

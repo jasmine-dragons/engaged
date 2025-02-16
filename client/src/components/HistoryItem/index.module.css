@@ -1,0 +1,54 @@
+.wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  animation: appear 0.5s backwards;
+  align-items: center;
+}
+.wrapper:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.left {
+  width: 0;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timestamp {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.summary {
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  flex: none;
+  display: flex;
+  gap: 20px;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}

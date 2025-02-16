@@ -13,6 +13,7 @@ export type StatProps = {
   min: number;
   avg: number;
   max: number;
+  animate?: boolean;
 };
 export function Stat({
   label,
@@ -22,10 +23,15 @@ export function Stat({
   min,
   avg,
   max,
+  animate = false,
 }: StatProps) {
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(animate ? 0 : 1);
 
   useEffect(() => {
+    if (!animate) {
+      setProgress(1);
+      return;
+    }
     const start = Date.now();
     let requestId = 0;
     const paint = () => {
@@ -42,7 +48,7 @@ export function Stat({
     return () => {
       window.cancelAnimationFrame(requestId);
     };
-  }, []);
+  }, [animate]);
 
   return (
     <div className={styles.stat}>

@@ -95,6 +95,10 @@
   gap: 10px;
 }
 
+.timestamp {
+  color: rgba(0, 0, 0, 0.5);
+}
+
 @keyframes appear {
   from {
     opacity: 0;
