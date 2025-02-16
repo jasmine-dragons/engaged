@@ -14,7 +14,7 @@
 
 ## What's next for Teacher Teacher
 
-_Training Teachers to Teach using tech._
+_Training Teachers to Teach using AI._
 
 ![results page](docs/results.png)
 
