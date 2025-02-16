@@ -37,6 +37,12 @@ The frontend was build in [React](https://react.dev/) and [Typescript](https://w
 ![image](https://github.com/user-attachments/assets/678ddf3b-1be3-4b51-9f38-f948ea1f00a8)
 _Client logic flow_
 
+Diving deeper into our client logic, there are a lot of moving parts that bring _engagED_ together! We begin with the **teacher** user instructing the virtual class, and the **AI students** listening in. We then utilize OpenAI's [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) in concurrence with Groq in order to convert this instruction to a text transcript. We then feed this transcript back into the AI Agents in order to provide them context and prompt them to chime in if neccesary. Each agent was build with [LangChain Agents](https://python.langchain.com/v0.1/docs/modules/agents/) and Groq to be able to respond to conversation with low latency. Initially, we ran each agent in parallel, but soon realized that this would cause them to talk over one another as they responded to the teacher. Thus, we implemented a round-robin algorithm between each agent and the teacher in order to minimize conflicts. 
+
+Then, we utilize ElvenLabs' [text to speech API](https://elevenlabs.io/docs/api-reference/text-to-speech/convert) in order to convert the agent's conversational input into speech, and played this in the virtual classroom setting. The speech from the teacher is now combined with the latest transcripts and messages from the AI Agents to create a master transcript. This is now used as the context provided to the AI Agents for them to respond to the teacher. 
+
+Once the session is ended, the master transcript is sent to OpenAI to summarize and provide analytics data for teachers. This is then displayed to the teachers in the following page. The data is then stored with their unique session id in MongoDB for retrieval and visibility later.
+
 ![image](https://github.com/user-attachments/assets/1756c555-4835-47e7-bdb4-fc44dc4b5589)
 _Our tech stack__
 
