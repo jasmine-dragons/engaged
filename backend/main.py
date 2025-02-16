@@ -97,10 +97,12 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"WebSocket error: {e}")
 
     finally:
-        # Merge all audio segments into one final WAV file
-        final_audio = sum(AudioProcessor.buffer)  # Concatenate segments
-        final_audio.export("final_output.wav", format="wav")
-        print("Final audio saved as final_output.wav")
+        # Save the final combined audio to WAV file
+        final_audio_path = audio_processor.get_full_audio("final_output.wav")
+        if final_audio_path:
+            print(f"Final audio saved as {final_audio_path}")
+        else:
+            print("No audio was recorded")
 
         await websocket.close()
 

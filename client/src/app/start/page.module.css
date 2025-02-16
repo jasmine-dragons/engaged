@@ -25,3 +25,8 @@
   flex: auto;
   width: 0;
 }
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
