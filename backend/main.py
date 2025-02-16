@@ -70,13 +70,11 @@ async def websocket_endpoint(websocket: WebSocket):
             response = await student_bot_manager.process_teacher_input(master_transcript)
             if response:
                 master_transcript.append({
-                    "text": response["response"],
+                    "text": response["text"],
                     "speaker": response["speaker"],
                     "timestamp": response["timestamp"],
                 })
-                # print("Response: ", response["response"])
                 audio_stream = text_to_speech(response["text"], response["voice_id"])
-                print("HIIIIIII")
                 await websocket.send_bytes(audio_stream)
     except Exception as e:
         print(f"WebSocket error: {e}")

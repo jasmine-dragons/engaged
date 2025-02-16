@@ -14,11 +14,80 @@
 
 .videos {
   display: flex;
-  background-color: black;
-  max-height: calc(100vh - 200px);
+  background-color: #1a1a1a;
+  position: relative;
+  padding: 10px;
+  gap: 10px;
+  border-radius: 10px;
+}
+.sharing {
+  outline: 5px solid #1dda59;
+}
+
+.warning {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background-color: #1dda59;
+  padding: 2px 50px;
+  font-size: 14px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.people {
+  display: flex;
+  gap: 5px;
+}
+.sharing .people {
+  width: 300px;
+  flex-direction: column;
+}
+.grid .people {
+  flex-wrap: wrap;
+  width: 100%;
+}
+.person {
+  aspect-ratio: 16 / 9;
+  background-color: #232323;
+  display: flex;
+  position: relative;
+  padding: 5px;
+}
+.person:not(.hasVideo) {
+  align-items: center;
+  justify-content: center;
+}
+.grid .person {
+  flex: 1 0 300px;
+}
+.person::after {
+  content: attr(data-name);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 2px 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-top-right-radius: 5px;
+  font-size: 14px;
+}
+.speaking {
+  box-shadow: inset 0 0 0 5px #1dda59;
+}
+
+.pfp {
+  border-radius: 50%;
 }
 
 .video {
+  width: 100%;
+  height: 100%;
+}
+
+.screenShare {
   flex: auto;
   width: 0;
 }
