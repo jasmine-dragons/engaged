@@ -58,20 +58,22 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
         <div className={styles.transcriptWrapper}>
           <h2>Transcript</h2>
           <ul className={styles.transcript}>
-            {data.transcript.map(({ text, speaker, timestamp }, i) => (
-              <li
-                className={`${styles.messageItem} ${
-                  speaker === "teacher"
-                    ? styles.messageRight
-                    : styles.messageLeft
-                }`}
-                style={{ animationDelay: `${(i + 1) * 50}ms` }}
-                key={i}
-              >
-                {speaker !== "teacher" ? <div className={speaker} /> : null}
-                <div className={styles.message}>{text}</div>
-              </li>
-            ))}
+            {data.transcript
+              .filter((t) => t.text)
+              .map(({ text, speaker, timestamp }, i) => (
+                <li
+                  className={`${styles.messageItem} ${
+                    speaker === "teacher"
+                      ? styles.messageRight
+                      : styles.messageLeft
+                  }`}
+                  style={{ animationDelay: `${(i + 1) * 50}ms` }}
+                  key={i}
+                >
+                  {speaker !== "teacher" ? <div className={speaker} /> : null}
+                  <div className={styles.message}>{text}</div>
+                </li>
+              ))}
           </ul>
         </div>
         <div className={styles.sidebar}>

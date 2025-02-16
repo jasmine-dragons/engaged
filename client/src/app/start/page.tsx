@@ -14,6 +14,7 @@ export default function Start() {
 
   const [started, setStarted] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const webcamPreviewRef = useRef<HTMLVideoElement>(null);
   const screenPreviewRef = useRef<HTMLVideoElement>(null);
@@ -22,8 +23,22 @@ export default function Start() {
   useEffect(() => {
     return () => {
       managerRef.current?.kill();
+      managerRef.current = null;
     };
   }, []);
+
+  async function endMeeting() {
+    if (!managerRef.current) {
+      return;
+    }
+    managerRef.current.kill();
+    managerRef.current = null;
+    setLoading(true);
+    setStarted(false);
+    const { simId, analytics } = await getAnalytics();
+    console.log(analytics);
+    redirect(`/results/${simId}`, RedirectType.push);
+  }
 
   async function startZoom() {
     if (webcamPreviewRef.current && screenPreviewRef.current) {
@@ -31,7 +46,8 @@ export default function Start() {
       setSharing(false);
       managerRef.current = await makeManager(
         webcamPreviewRef.current,
-        screenPreviewRef.current
+        screenPreviewRef.current,
+        endMeeting
       );
     }
   }
@@ -84,7 +100,11 @@ export default function Start() {
         </div>
       </div>
       <div className={styles.buttons}>
-        {!started ? (
+        {loading ? (
+          <button className="button" type="button" disabled>
+            <span className={styles.spinner} /> Analyzing session...
+          </button>
+        ) : !started ? (
           <button type="button" className="button" onClick={startZoom}>
             Begin Class
           </button>
@@ -114,16 +134,7 @@ export default function Start() {
                 Stop Sharing
               </button>
             ) : null}
-            <button
-              type="button"
-              className="button"
-              onClick={async () => {
-                managerRef.current?.kill();
-                const { simId, analytics } = await getAnalytics();
-                console.log(analytics);
-                redirect(`/results/${simId}`, RedirectType.push);
-              }}
-            >
+            <button type="button" className="button" onClick={endMeeting}>
               End Meeting
             </button>
           </>
