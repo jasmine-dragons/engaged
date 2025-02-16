@@ -80,3 +80,4 @@ backend/__pycache__/
 backend/**/__pycache__/
 
 final_output.webm
+final_output.wav

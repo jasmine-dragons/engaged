@@ -22,7 +22,15 @@ export async function startSim(
 
 export type HistoricEntry = {
   analytics: Analytics;
-  config: string[];
+  config: {
+    name: string;
+    traits: string;
+    behavior: string;
+    interaction_frequency: number;
+    response_style: string;
+    cooldown: number;
+    voice_id: string;
+  }[];
   /** Do NOT use since it gets rounded in JS; use `simulation_id_str` instead */
   simulation_id: number;
   simulation_id_str: string;

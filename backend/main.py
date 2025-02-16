@@ -1,3 +1,4 @@
+import asyncio
 from doctest import master
 from typing import Dict
 from fastapi import FastAPI, Request, WebSocket
@@ -20,7 +21,6 @@ from fastapi import FastAPI, Request
 import uvicorn
 from typing import Dict, List
 from analytics import SpeechAnalyzer
-import time
 
 load_dotenv()
 
@@ -48,42 +48,59 @@ audio_processor = AudioProcessor()
 
 app = FastAPI()
 
+async def handle_audio_chunk(websocket: WebSocket, audio_chunk: bytes):
+    global running
+    if not running:
+        return
+    audio_processor.process_chunk(audio_chunk)
+    transcription = await audio_processor.transcribe_latest()
+
+    print("Transcription: ", transcription)
+
+    master_transcript.append({
+        "text": transcription,
+        "speaker": "teacher",
+        "timestamp": datetime.now()
+    })
+
+    if not running:
+        return
+    response = await student_bot_manager.process_teacher_input(master_transcript)
+    if response:
+        master_transcript.append({
+            "text": response["text"],
+            "speaker": response["speaker"],
+            "timestamp": response["timestamp"],
+        })
+        audio_stream = text_to_speech(response["text"], response["voice_id"])
+        if not running:
+            return
+        await websocket.send_bytes(audio_stream)
+
+tasks: list[asyncio.Task] = []
+running = False
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     global master_transcript
     global duration
+    global tasks, running
 
     await websocket.accept()
     start_time = datetime.now()
+    tasks = []
+    running = True
     try:
         while True:
+            print(master_transcript)
             audio_chunk = await websocket.receive_bytes()
-            audio_processor.process_chunk(audio_chunk)
-            transcription = await audio_processor.transcribe_latest()
-
-            print("Transcription:", transcription)
-
-            master_transcript.append({
-                "text": transcription,
-                "speaker": "teacher",
-                "timestamp": datetime.now()
-            })
-
-            response = await student_bot_manager.process_teacher_input(master_transcript)
-            if response:
-                master_transcript.append({
-                    "text": response["text"],
-                    "speaker": response["speaker"],
-                    "timestamp": response["timestamp"],
-                })
-                audio_stream = text_to_speech(response["text"], response["voice_id"])
-                await websocket.send_bytes(audio_stream)
-
+            tasks.append(asyncio.create_task(handle_audio_chunk(websocket, audio_chunk)))
             
     except Exception as e:
         print(f"WebSocket error: {e}")
 
     finally:
+        running = False
         # Save the final combined audio to WebM file
         final_audio_path = audio_processor.get_full_audio("final_output.webm")
         if final_audio_path:
@@ -98,6 +115,9 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/start-sim")
 async def start_sim(request: Request):
     """Start the simulation."""
+    global master_transcript
+    master_transcript = []
+
     data = await request.json()
 
     student_personalities = data.get("studentPersonalities")
@@ -130,8 +150,12 @@ async def get_analytics():
     import random
 
     global simulation_id
+    global tasks
 
 
+    await asyncio.gather(*tasks)
+    tasks = []
+    
     analyzer = SpeechAnalyzer(OPENAI_API_KEY)
 
 #     duration= 1000
