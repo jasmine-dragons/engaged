@@ -45,6 +45,7 @@ export default function Results() {
               className={`${styles.messageItem} ${
                 who ? styles.messageLeft : styles.messageRight
               }`}
+              style={{ animationDelay: `${i * 50}ms` }}
               key={i}
             >
               {who ? <div className={styles.who} /> : null}
