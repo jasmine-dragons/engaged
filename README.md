@@ -49,6 +49,8 @@ Low-latency Interaction: We had to optimize AI interactions to maintain near-rea
 
 Agent Coordination: AI student agents needed to understand each other's context and avoid talking over one another. Synchronization and maintaining conversational order proved to be a complex challenge.
 
+Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts. 
+
 ## Accomplishments that we're proud of
 
 ## What we learned
