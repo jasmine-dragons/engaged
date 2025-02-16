@@ -1,4 +1,4 @@
-export const backendBaseUrl = process.env.BACKEND_URL;
+export const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export type SimulationRequest = {
   studentPersonalities: string[];
