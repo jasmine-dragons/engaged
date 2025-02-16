@@ -1,4 +1,4 @@
-# 🌲 TreeHacks 2025: AI Classroom Simulation
+# 🌲 TreeHacks 2025: Teacher Teacher - AI-Powered Classroom Simulation for Smarter Teacher Training
 
 ## Inspiration
 
