@@ -8,10 +8,6 @@
   align-self: flex-start;
 }
 
-.zoomWrapper {
-  height: 70vh;
-}
-
 .container button {
   border: 1px solid red;
 }
@@ -19,6 +15,7 @@
 .videos {
   display: flex;
   background-color: black;
+  max-height: calc(100vh - 200px);
 }
 
 .video {
