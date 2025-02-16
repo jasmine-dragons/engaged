@@ -1,6 +1,7 @@
 import { Analysis } from "@/lib/types";
 import styles from "./page.module.css";
 import { Stat } from "@/components/Stat";
+import { dateFormat } from "@/lib/fmt";
 
 const result: Analysis = {
   transcript: [
@@ -33,6 +34,7 @@ const result: Analysis = {
     talkTimeRatio: 80,
     fillerWords: 5,
   },
+  time: new Date("2024-10-27T10:00:00"),
 };
 
 export default function Results() {
@@ -67,6 +69,7 @@ export default function Results() {
               min={100}
               avg={135}
               max={180}
+              animate
             />
             <Stat
               label="emotion"
@@ -75,6 +78,7 @@ export default function Results() {
               min={1}
               avg={3}
               max={5}
+              animate
             />
             <Stat
               label="talk time ratio"
@@ -83,6 +87,7 @@ export default function Results() {
               min={60}
               avg={77.5}
               max={90}
+              animate
             />
             <Stat
               label="filler words"
@@ -90,10 +95,12 @@ export default function Results() {
               min={0}
               avg={7.5}
               max={15}
+              animate
             />
           </div>
           <h2>Summary</h2>
           <p>{result.summary}</p>
+          <p className={styles.timestamp}>{dateFormat.format(result.time)}</p>
         </div>
       </div>
     </div>
