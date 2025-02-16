@@ -1,6 +1,5 @@
 import { HistoryItem } from "@/components/HistoryItem";
 import { getHistory } from "@/lib/api";
-import { Analysis } from "@/lib/types";
 
 const USER_ID = "2";
 

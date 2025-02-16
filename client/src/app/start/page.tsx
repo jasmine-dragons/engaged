@@ -6,15 +6,23 @@ import Link from "next/link";
 import { redirect, RedirectType, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { getAnalytics } from "@/lib/api";
+import { allStudents } from "@/lib/students";
+
+type Student = {
+  id: string;
+  name: string;
+  image: string | StaticImageData;
+  speaking: boolean;
+};
 
 export default function Start() {
-  const searchParams = useSearchParams();
-
   const [started, setStarted] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [students, setStudents] = useState<Student[]>([]);
 
   const webcamPreviewRef = useRef<HTMLVideoElement>(null);
   const screenPreviewRef = useRef<HTMLVideoElement>(null);
@@ -47,7 +55,22 @@ export default function Start() {
       managerRef.current = await makeManager(
         webcamPreviewRef.current,
         screenPreviewRef.current,
-        endMeeting
+        endMeeting,
+        (students) =>
+          setStudents(
+            students.map(([id, personality, { name }]) => ({
+              id,
+              name,
+              image:
+                allStudents.find((s) => s.personality === personality)?.image ??
+                "",
+              speaking: false,
+            }))
+          ),
+        (studentId, speaking) =>
+          setStudents((students) =>
+            students.map((s) => (s.id === studentId ? { ...s, speaking } : s))
+          )
       );
     }
   }
@@ -82,15 +105,15 @@ export default function Start() {
               playsInline
             ></video>
           </div>
-          {Array.from({ length: 4 }, (_, i) => (
+          {students.map(({ id, image, name, speaking }) => (
             <div
-              key={i}
-              className={`${styles.person} ${i === 2 ? styles.speaking : ""}`}
-              data-name="John Asshole"
+              key={id}
+              className={`${styles.person} ${speaking ? styles.speaking : ""}`}
+              data-name={name}
             >
               <Image
-                src={childImage}
-                alt="person"
+                src={image}
+                alt={name}
                 width={80}
                 height={80}
                 className={styles.pfp}

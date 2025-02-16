@@ -20,17 +20,20 @@ export async function startSim(
   }).then((r) => r.json());
 }
 
+/** As defined in student_bots.py */
+export type Personality = {
+  name: string;
+  traits: string;
+  behavior: string;
+  interaction_frequency: number;
+  response_style: string;
+  cooldown: number;
+  voice_id: string;
+};
+
 export type HistoricEntry = {
   analytics: Analytics;
-  config: {
-    name: string;
-    traits: string;
-    behavior: string;
-    interaction_frequency: number;
-    response_style: string;
-    cooldown: number;
-    voice_id: string;
-  }[];
+  config: Personality[];
   /** Do NOT use since it gets rounded in JS; use `simulation_id_str` instead */
   simulation_id: number;
   simulation_id_str: string;
@@ -75,3 +78,14 @@ export async function getAnalytics(): Promise<{
     r.json()
   );
 }
+
+export type WebSocketJsonMessage =
+  | {
+      type: "students";
+      students: [
+        name: string,
+        personalityType: string,
+        personality: Personality
+      ][];
+    }
+  | { type: "about-to-speak"; studentName: string };
