@@ -12,41 +12,41 @@ load_dotenv()
 
 # Personality templates for different student types
 STUDENT_PERSONALITIES = {
-    "eager": {
-        "name": "Eager Learner",
-        "traits": "Enthusiastic, engaged, always ready to participate, asks thoughtful questions",
-        "behavior": "Frequently raises hand, responds positively, shows excitement about learning",
+    "excitable": {
+        "name": "Excitable Student",
+        "traits": "Enthusiastic, energetic, eager to participate, sometimes overly excited",
+        "behavior": "Frequently raises hand, responds with high energy, shows great excitement about learning",
+        "interaction_frequency": 0.8,  # Very high chance of interaction
+        "response_style": "Energetic and enthusiastic responses, often speaks quickly and excitedly",
+        "cooldown": 2,  # Very quick to respond again
+        "voice_id": "TxYttQ18a6GMHv5emxHd"  # Enthusiastic young voice
+    },
+    "asshole": {
+        "name": "Challenging Student",
+        "traits": "Competitive, confrontational, opinionated, challenges authority",
+        "behavior": "Frequently disagrees, voices strong opinions, can be disruptive",
         "interaction_frequency": 0.7,  # High chance of interaction
-        "response_style": "Energetic and enthusiastic responses, often volunteers information, asks follow-up questions",
-        "cooldown": 3,  # Quick to respond again,
-        "voice_id": "TxYttQ18a6GMHv5emxHd"
+        "response_style": "Confrontational responses, often questions or challenges the teacher",
+        "cooldown": 4,  # Quick to speak up again
+        "voice_id": "A96RjY2GLQ3jVKjkRglb"  # Strong, assertive voice
     },
-    "shy": {
-        "name": "Shy Student",
-        "traits": "Quiet, thoughtful, takes time to process, hesitant to speak up",
-        "behavior": "Rarely volunteers but gives good answers when called upon",
-        "interaction_frequency": 0.3,  # Lower chance of interaction
-        "response_style": "Brief, quiet responses, speaks only when confident about the answer",
-        "cooldown": 15,  # Needs more time between interactions
-        "voice_id": "A96RjY2GLQ3jVKjkRglb"
+    "boring": {
+        "name": "Reserved Student",
+        "traits": "Prefers routine, avoids risks, consistently completes work but lacks creativity",
+        "behavior": "Rarely volunteers, gives minimal responses, sticks to basic answers",
+        "interaction_frequency": 0.3,  # Low chance of interaction
+        "response_style": "Brief, straightforward responses, rarely elaborates",
+        "cooldown": 15,  # Long time between interactions
+        "voice_id": "9UGJnQaSjBP7pG2dQqjg"  # Monotone voice
     },
-    "distracted": {
-        "name": "Distracted Student",
-        "traits": "Easily distracted, sometimes off-topic, but generally well-meaning",
-        "behavior": "May ask for repetition, occasionally makes off-topic comments",
+    "normal": {
+        "name": "Balanced Student",
+        "traits": "Well-rounded, friendly, works well with others",
+        "behavior": "Participates regularly, gives thoughtful responses, works well in groups",
         "interaction_frequency": 0.5,  # Medium chance of interaction
-        "response_style": "Sometimes off-topic responses, may ask for clarification, occasionally relates to unrelated personal experiences",
-        "cooldown": 5,  # Moderate cooldown, might get distracted and speak up again soon
-        "voice_id": "9UGJnQaSjBP7pG2dQqjg"
-    },
-    "analytical": {
-        "name": "Analytical Thinker",
-        "traits": "Detail-oriented, logical, likes to understand the 'why'",
-        "behavior": "Asks detailed questions, points out inconsistencies, seeks deeper understanding",
-        "interaction_frequency": 0.6,  # Medium-high chance of interaction
-        "response_style": "Detailed, logical responses, often asks about underlying principles and mechanisms",
-        "cooldown": 8,  # Takes time to formulate next thought
-        "voice_id": "FMBDwjn0TnQbOKpGVlDA"
+        "response_style": "Balanced, thoughtful responses with good engagement",
+        "cooldown": 8,  # Moderate time between interactions
+        "voice_id": "FMBDwjn0TnQbOKpGVlDA"  # Clear, balanced voice
     }
 }
 
@@ -189,17 +189,9 @@ async def main():
     # Set random seed for reproducible testing
     random.seed(42)
     
-    # Create student configurations
-    student_configs = [
-        {"name": "Alice", "personality": "eager"},
-        {"name": "Bob", "personality": "shy"},
-        {"name": "Charlie", "personality": "distracted"},
-        {"name": "Diana", "personality": "analytical"}
-    ]
-    
     # Initialize manager and students
     manager = StudentBotManager()
-    manager.initialize_students(student_configs)
+    manager.initialize_students(["excitable", "asshole", "boring", "normal"])
     
     # Example transcripts to test different scenarios
     transcripts = [
@@ -224,14 +216,14 @@ async def main():
         print("-" * 50)
         
         # Get student responses
-        responses = await manager.process_teacher_input(transcript)
+        responses = await manager.process_teacher_input([transcript])
         
         # Print responses
-        for response in responses:
-            if response["responded"]:
-                print(f"\n{response['student_name']} says: {response['response']}")
+        for response in [responses]:
+            if response:
+                print(f"\n{response['speaker']} says: {response['text']}")
             else:
-                print(f"\n{response['student_name']} did not respond")
+                print(f"\nNo student responded")
         
         # Wait between transcripts to reset cooldowns
         if i < len(transcripts):

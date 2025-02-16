@@ -40,7 +40,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 "timestamp": datetime.now()
             })
 
-            response = student_bot_manager.process_teacher_input(master_transcript)
+            response = await student_bot_manager.process_teacher_input(master_transcript)
             if(response):
                 master_transcript.append({
                     "text": response["response"],
@@ -67,7 +67,7 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/start-sim")
 async def start_sim(request: Request):
     """Start the simulation."""
-    data = request.json()
+    data = await request.json()
 
     student_personalities = data.get("studentPersonalities")
     if not student_personalities:
