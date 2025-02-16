@@ -53,8 +53,8 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"WebSocket error: {e}")
 
     finally:
-        # Save the final combined audio to WAV file
-        final_audio_path = audio_processor.get_full_audio("final_output.wav")
+        # Save the final combined audio to WebM file
+        final_audio_path = audio_processor.get_full_audio("final_output.webm")
         if final_audio_path:
             print(f"Final audio saved as {final_audio_path}")
         else:
