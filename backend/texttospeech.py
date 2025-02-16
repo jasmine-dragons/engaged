@@ -15,12 +15,19 @@ elevenlabs_client = ElevenLabs(api_key=api_key)
 
 def text_to_speech(text: str, voice_id: str, model_id: str = "eleven_multilingual_v2", output_format: str = "mp3_44100_128"):
     """Convert text to speech using the ElevenLabs API."""
-    return elevenlabs_client.text_to_speech.convert(
-        text=text,
-        voice_id=voice_id,
-        model_id=model_id,
-        output_format=output_format
-    )
+    try:
+        print("Converting text to speech...")
+        stream = elevenlabs_client.text_to_speech.convert(
+            text=text,
+            voice_id=voice_id,
+            model_id=model_id,
+            output_format=output_format
+        )
+        print("Done.")
+        return stream
+    except Exception as e:
+        print(str(e))
+        return None 
 
 if __name__ == "__main__":
     # Generate the audio
