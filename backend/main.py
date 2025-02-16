@@ -198,6 +198,7 @@ async def connect_to_media_websocket(
     stream_id: str,
     media_type: str
 ) -> None:
+    global combined_audio
     """Connect to the RTMS media WebSocket server."""
     connection_id = f"{meeting_uuid}_{stream_id}_{media_type}" 
     
@@ -320,31 +321,52 @@ async def connect_to_rtms_websocket(
         if connection_id in active_connections:
             del active_connections[connection_id]
 
-@app.get("/analytics")
-async def get_analytics(file: BinaryIO): 
+@app.get("/analytics/{encoding}")
+async def get_analytics(encoding): 
     URL = "https://api.voicegain.ai" #/v1/sa/call?page=1&per_page=50>; rel="first",
     headers = {
         "Authorization": VOICEGAIN_API_KEY,
-        "Content-Type": "application/json"
     }
 
     # start new analytics session
 
-    output_buffer = BytesIO()
-    combined_audio.export(output_buffer, format="wav")
-    combined_base64_encoding = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+    # output_buffer = BytesIO()
+    # combined_audio.export(output_buffer, format="wav")
+    # combined_base64_encoding = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+    combined_base64_encoding = encoding
 
-    params = {
-        "source" : {
-            "inline": combined_base64_encoding
-        }
+    data = {
+        "audio": {
+            "source" : {
+                "inline": combined_base64_encoding
+            }
+        },
+        "asyncMode": "OFF-LINE",
+        "speakerChannels": [
+            {
+            "audioChannelSelector": "mix",
+            "isAgent": False,
+            "vadMode": "normal"
+            }
+        ]
+    }
 
-        
-}
-    
-    response = requests.post(URL + "/sa", headers=headers, body=params)
+    print("HERE")
 
-    response = requests.get(URL + "", headers=headers, data=file)
+    try:
+        res =  await requests.post(URL + "/v1/sa", headers=headers, data=data)
+
+        print("HERE@")
+        sessionID = res.json()["saSessionId"]
+        print(sessionID)
+
+        response = await requests.get(URL + f'/sa/{sessionID}/data', headers=headers)
+
+        print("MEOWMEOW")
+    except(Exception): 
+        return {Exception}
+
+    return response.json()
 
 
 
