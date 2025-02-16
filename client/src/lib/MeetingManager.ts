@@ -35,6 +35,10 @@ export async function makeManager(
     onClose();
   });
 
+  const gainNode = audioContext.createGain();
+  gainNode.gain.value = 10;
+  gainNode.connect(audioContext.destination);
+
   let lastSpeaker = "";
   ws.addEventListener(
     "message",
@@ -55,7 +59,7 @@ export async function makeManager(
         const audioBuffer = await audioContext.decodeAudioData(e.data);
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(audioContext.destination);
+        source.connect(gainNode);
         source.addEventListener("ended", () => {
           onSpeak(lastSpeaker, false);
         });
@@ -74,9 +78,9 @@ export async function makeManager(
   let screenStream: MediaStream | null = null;
 
   webcamPreview.srcObject = videoStream;
-  webcamPreview.play();
+  webcamPreview.play().catch(() => {});
   screenPreview.srcObject = screenStream;
-  screenPreview.play();
+  screenPreview.play().catch(() => {});
 
   let buffers: Float32Array[] = [];
   const mediaStreamSource = audioContext.createMediaStreamSource(audioStream);
@@ -134,7 +138,7 @@ export async function makeManager(
           video: true,
         });
         screenPreview.srcObject = screenStream;
-        screenPreview.play();
+        screenPreview.play().catch(() => {});
       } else {
         screenStream = null;
         screenPreview.pause();

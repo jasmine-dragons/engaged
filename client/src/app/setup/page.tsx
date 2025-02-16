@@ -3,12 +3,12 @@
 import { Classroom } from "@/components/Classroom";
 import styles from "./page.module.css";
 import { Student } from "@/components/Student";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { startSession } from "./actions";
 import { classrooms, allStudents, MAX_STUDENTS } from "@/lib/students";
 import { useSearchParams } from "next/navigation";
 
-export default function Setup() {
+function Setup() {
   const params = useSearchParams();
   const personalities = params.get("p")?.split("\n") ?? [];
   const defaultSelection: Record<string, number> = {};
@@ -113,5 +113,13 @@ export default function Setup() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function SetupWrapped() {
+  return (
+    <Suspense>
+      <Setup />
+    </Suspense>
   );
 }
