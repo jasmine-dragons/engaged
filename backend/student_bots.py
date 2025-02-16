@@ -48,16 +48,16 @@ STUDENT_PERSONALITIES = {
         "name": "Excitable Student",
         "traits": "Enthusiastic, energetic, eager to participate, sometimes overly excited",
         "behavior": "Frequently raises hand, responds with high energy, shows great excitement about learning",
-        "interaction_frequency": 0.8,  # Very high chance of interaction
+        "interaction_frequency": 0.7,  # Very high chance of interaction
         "response_style": "Energetic and enthusiastic responses, often speaks quickly and excitedly",
-        "cooldown": 15,  # Very quick to respond again
+        "cooldown": 5,  # Very quick to respond again
         "voice_id": "9UGJnQaSjBP7pG2dQqjg"  # Enthusiastic young voice
     },
     "asshole": {
         "name": "Challenging Student",
         "traits": "Competitive, confrontational, opinionated, challenges authority",
         "behavior": "Frequently disagrees, voices strong opinions, can be disruptive",
-        "interaction_frequency": 0.0,  # High chance of interaction
+        "interaction_frequency": 0.3,  # High chance of interaction
         "response_style": "Confrontational responses, often questions or challenges the teacher",
         "cooldown": 15,  # Quick to speak up again
         "voice_id": "A96RjY2GLQ3jVKjkRglb"  # Strong, assertive voice
@@ -66,7 +66,7 @@ STUDENT_PERSONALITIES = {
         "name": "Reserved Student",
         "traits": "Prefers routine, avoids risks, consistently completes work but lacks creativity",
         "behavior": "Rarely volunteers, gives minimal responses, sticks to basic answers",
-        "interaction_frequency": 0.3,  # Low chance of interaction
+        "interaction_frequency": 0.0,  # Low chance of interaction
         "response_style": "Brief, straightforward responses, rarely elaborates",
         "cooldown": 5,  # Long time between interactions
         "voice_id": "TxYttQ18a6GMHv5emxHd"  # Monotone voice
