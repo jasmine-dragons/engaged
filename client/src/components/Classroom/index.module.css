@@ -47,6 +47,7 @@
   border-radius: 50%;
   position: relative;
   margin-right: -15px;
+  object-fit: cover;
 }
 .total {
   margin-left: 20px;
