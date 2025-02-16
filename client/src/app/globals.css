@@ -52,3 +52,19 @@ button:not(:disabled) {
 .heading {
   font-size: 64px;
 }
+
+.button {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 20px;
+  background-color: black;
+  background-image: linear-gradient(to bottom, #333, black);
+  color: white;
+  border-radius: 10px;
+}
+.button:disabled {
+  background-image: none;
+  background-color: rgba(0, 0, 0, 0.2);
+}

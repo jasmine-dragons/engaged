@@ -114,7 +114,7 @@ export default function Setup() {
           {totalSelected} of {MAX_STUDENTS} students selected.
         </p>
         <button
-          className={styles.button}
+          className="button"
           type="button"
           disabled={
             totalSelected === 0 || totalSelected > MAX_STUDENTS || loading

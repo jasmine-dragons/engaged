@@ -2,109 +2,104 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 
 export default function Start() {
   const searchParams = useSearchParams();
 
+  const [started, setStarted] = useState(false);
+
+  const webcamPreviewRef = useRef<HTMLVideoElement>(null);
+  const screenPreviewRef = useRef<HTMLVideoElement>(null);
+
+  async function startZoom() {
+    setStarted(true);
+
+    const audioStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+    });
+    const videoStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+    });
+    const screenStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+    });
+
+    if (webcamPreviewRef.current) {
+      webcamPreviewRef.current.srcObject = videoStream;
+      webcamPreviewRef.current.play();
+    }
+    if (screenPreviewRef.current) {
+      screenPreviewRef.current.srcObject = screenStream;
+      screenPreviewRef.current.play();
+    }
+
+    const audioRecorder = new MediaRecorder(audioStream);
+
+    audioRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        // TODO: send audio chunk
+        console.log(event.data);
+      }
+    };
+
+    audioRecorder.start(3000); // Send audio every 3 seconds
+
+    setInterval(() => captureFrame(screenStream, "screen"), 5000);
+    setInterval(() => captureFrame(videoStream, "webcam"), 5000);
+
+    function captureFrame(stream: MediaStream, type: "screen" | "webcam") {
+      const track = stream.getVideoTracks()[0];
+      if (!track) return;
+
+      const imageCapture = new ImageCapture(track);
+      imageCapture.grabFrame().then((bitmap) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          throw new TypeError("no context :(");
+        }
+        ctx.drawImage(bitmap, 0, 0);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            // TODO: send video frame
+            console.log(URL.createObjectURL(blob));
+          }
+        }, "image/jpeg");
+      });
+    }
+  }
+
   return (
     <div className="container">
       <h1 className="heading">Your experience is ready.</h1>
       <p>Click the link below to join your simulated classroom experience.</p>
-      <pre>{searchParams.get("personalities")}</pre>
-      <Link href="#" className={styles.button}>
-        Begin Class
-      </Link>
-      <div className="main-content">
-        <div className="meeting-header">
-          <h2 className="meeting-title">RTMS Mock Server</h2>
-        </div>
-
-        <div className="form-group">
-          <div className="url-container">
-            <label>
-              Provide Webhook URL. To know more about Zoom Webhooks, visit{" "}
-              <a
-                href="https://developers.zoom.us/docs/api/webhooks/"
-                target="_blank"
-              >
-                here
-              </a>
-              .
-            </label>
-
-            <input
-              type="text"
-              id="webhookUrl"
-              placeholder="Enter Webhook URL"
-            />
-            <button id="validateBtn">
-              <i className="fas fa-check-circle"></i> Validate
-            </button>
-          </div>
-        </div>
-
-        <div className="video-container">
-          <video id="mediaVideo" autoPlay playsInline muted></video>
-          <audio id="mediaAudio" autoPlay></audio>
-        </div>
-
-        <div className="controls">
-          <button id="sendBtn" disabled>
-            <i className="fas fa-video"></i> Start Meeting
-          </button>
-          <button id="pauseBtn" disabled>
-            <i className="fas fa-pause"></i> Pause RTMS
-          </button>
-          <button id="resumeBtn" disabled>
-            <i className="fas fa-play"></i> Resume RTMS
-          </button>
-          <button id="stopBtn" disabled>
-            <i className="fas fa-stop"></i> Stop RTMS
-          </button>
-          <button id="startRtmsBtn" disabled>
-            <i className="fas fa-play-circle"></i> Start RTMS
-          </button>
-          <button id="endBtn" disabled>
-            <i className="fas fa-phone-slash"></i> End Meeting
-          </button>
-        </div>
-      </div>
-
-      <div className="sidebar">
-        <div className="log-tabs">
-          <button className="tab-button active" data-tab="transcripts">
-            Transcripts
-          </button>
-          <button className="tab-button" data-tab="logs">
-            Logs
-          </button>
-        </div>
-
-        <div id="transcripts-container" className="logs-container">
-          <div id="transcript"></div>
-        </div>
-
-        <div
-          id="logs-container"
-          className="logs-container"
-          style={{ display: "none" }}
+      {!started ? (
+        <button
+          style={{ alignSelf: "flex-start" }}
+          type="button"
+          className="button"
+          onClick={startZoom}
         >
-          <div id="system-logs"></div>
-        </div>
+          Begin Class
+        </button>
+      ) : null}
+      <div className={styles.videos} style={{ display: started ? "" : "none" }}>
+        <video
+          className={styles.video}
+          ref={webcamPreviewRef}
+          playsInline
+        ></video>
+        <video
+          className={styles.video}
+          ref={screenPreviewRef}
+          playsInline
+        ></video>
       </div>
-
-      <script src="/js/config.js"></script>
-
-      <script src="/js/api.js"></script>
-
-      <script src="/js/mediaHandler.js"></script>
-      <script src="/js/webSocket.js"></script>
-
-      <script src="/js/uiController.js"></script>
-
-      <script src="/js/audio-processor.js"></script>
     </div>
   );
 }
