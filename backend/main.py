@@ -18,11 +18,13 @@ import requests
 from fastapi import FastAPI, Request
 import uvicorn
 from typing import Dict, List
+from analytics import SpeechAnalyzer
 
 load_dotenv()
 
 # set up database
 MONGO_URL = os.getenv("MONGO_URL")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 client = MongoClient(MONGO_URL)
 
@@ -47,8 +49,10 @@ app = FastAPI()
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     global master_transcript
+    global duration
 
     await websocket.accept()
+    start_time = datetime.now()
     try:
         while True:
             audio_chunk = await websocket.receive_bytes()
@@ -80,6 +84,8 @@ async def websocket_endpoint(websocket: WebSocket):
         final_audio_path = audio_processor.get_full_audio("final_output.webm")
         if final_audio_path:
             print(f"Final audio saved as {final_audio_path}")
+            end_time = datetime.now()
+            duration = end_time - start_time
         else:
             print("No audio was recorded")
 
@@ -110,62 +116,72 @@ async def get_history(user_id: int):
     return {"data": history}
 
 @app.get("/analytics")
-async def get_analytics(encoding): 
+async def get_analytics(): 
     global simulation_id
-    URL = "https://api.voicegain.ai" 
-    headers = {
-        "Authorization": VOICEGAIN_API_KEY,
-    }
+    # URL = "https://api.voicegain.ai" 
+    # headers = {
+    #     "Authorization": VOICEGAIN_API_KEY,
+    # }
 
+    analyzer = SpeechAnalyzer(OPENAI_API_KEY)
+
+    analysis = analyzer.analyze(master_transcript, duration)
+
+    # # start new analytics session
+
+    # # output_buffer = BytesIO()
+    # # combined_audio.export(output_buffer, format="wav")
+    # # combined_base64_encoding = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+    # combined_base64_encoding = encoding
+
+    # print("SD:LKFJ:SLFJ")
+
+    # sessions.insert_one({
+    #         "user_id": user_id,
+    #         "transcript": master_transcript,
+    #         "simulation_id": simulation_id,
+    #         "analytics": {}, 
+    #         "audio": encoding,
+    #         "config": [],
+    #     })
+
+    # simulation_id += 1
     
-    # start new analytics session
+    # # return 
 
-    # output_buffer = BytesIO()
-    # combined_audio.export(output_buffer, format="wav")
-    # combined_base64_encoding = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
-    combined_base64_encoding = encoding
+    # data = {
+    #     "audio": {
+    #         "source" : {
+    #             "inline": combined_base64_encoding
+    #         }
+    #     },
+    #     "asyncMode": "OFF-LINE",
+    #     "speakerChannels": [
+    #         {
+    #         "audioChannelSelector": "mix",
+    #         "isAgent": False,
+    #         "vadMode": "normal"
+    #         }
+    #     ]
+    # }
 
-    sessions.insert_one({
-            "user_id": user_id,
-            "transcript": master_transcript,
-            "simulation_id": simulation_id,
-            "analytics": {}, 
-            "audio": encoding,
-            "config": [],
-        })
+    # print("HERE")
 
-    simulation_id += 1
-    
-    # return 
+    # try:
+    #     res =  await requests.post(URL + "/v1/sa", headers=headers, data=data)
 
-    data = {
-        "audio": {
-            "source" : {
-                "inline": combined_base64_encoding
-            }
-        },
-        "asyncMode": "OFF-LINE",
-        "speakerChannels": [
-            {
-            "audioChannelSelector": "mix",
-            "isAgent": False,
-            "vadMode": "normal"
-            }
-        ]
-    }
+    #     print("HERE@")
+    #     sessionID = res.json()["saSessionId"]
+    #     print(sessionID)
 
-    try:
-        res =  await requests.post(URL + "/v1/sa", headers=headers, data=data)
+    #     response = await requests.get(URL + f'/sa/{sessionID}/data', headers=headers)
 
-        sessionID = res.json()["saSessionId"]
-        print(sessionID)
+    #     print("MEOWMEOW")
 
-        response = await requests.get(URL + f'/sa/{sessionID}/data', headers=headers)
+    # except(Exception): 
+    #     return {Exception}
 
-    except(Exception): 
-        return {Exception}
-
-    return response.json()
+    # return response.json()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
