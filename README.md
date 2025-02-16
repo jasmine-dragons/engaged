@@ -1,5 +1,19 @@
 # 🌲 TreeHacks 2025: AI Classroom Simulation
 
+## Inspiration
+
+## What it does
+
+## How we built it
+
+## Challenges we ran into
+
+## Accomplishments that we're proud of
+
+## What we learned
+
+## What's next for Teacher Teacher
+
 _Training Teachers to Teach using tech._
 
 ![new classroom selection page](docs/select-better-draft.png)
