@@ -180,9 +180,9 @@ class StudentBotManager:
     def initialize_students(self, student_personalities: List[str]):
         # Create student bots
         self.students = []
-        for personality in student_personalities:
+        for i, personality in enumerate(student_personalities):
             try:
-                name = f"student_{personality}"
+                name = f"student_{personality}_{i}"
                 student = StudentBot(name, personality)
                 self.students.append(student)
                 print("[DEBUG]", f"Created student {student.name} with personality {personality}")

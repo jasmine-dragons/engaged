@@ -85,7 +85,7 @@ There are many aspects of _engagED_ that we could improve:
 ### Setup
 
 ![home page](./docs/thubmnail.png)
-
+![image](https://github.com/user-attachments/assets/ca42650f-dafa-4c92-bf2a-1d3af1f2f4c0)
 ![results page animation](docs/output.gif)
 
 ## Development

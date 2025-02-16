@@ -6,9 +6,19 @@ import { Student } from "@/components/Student";
 import { useState } from "react";
 import { startSession } from "./actions";
 import { classrooms, allStudents, MAX_STUDENTS } from "@/lib/students";
+import { useSearchParams } from "next/navigation";
 
 export default function Setup() {
-  const [selection, setSelection] = useState<Record<string, number>>({});
+  const params = useSearchParams();
+  const personalities = params.get("p")?.split("\n") ?? [];
+  const defaultSelection: Record<string, number> = {};
+  for (const personality of personalities) {
+    defaultSelection[personality] ??= 0;
+    defaultSelection[personality]++;
+  }
+
+  const [selection, setSelection] =
+    useState<Record<string, number>>(defaultSelection);
   const totalSelected = Object.values(selection).reduce((a, b) => a + b, 0);
 
   const [loading, setLoading] = useState(false);

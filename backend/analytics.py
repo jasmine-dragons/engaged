@@ -20,14 +20,17 @@ class SpeechAnalyzer:
     def detect_emotions(self, text):
         """Detect emotions using OpenAI API. Say in one word"""
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "Analyze the emotion in the following text."},
-                    {"role": "user", "content": text}
-                ]
-            )
-            return response.choices[0].message.content
+            valid = False
+            while not valid: 
+                response = self.client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "Analyze the emotion in the following text on a scale of 1-10 with no additional explanation."},
+                        {"role": "user", "content": text}
+                    ]
+                )
+                if response.choices[0].message.content.isdigit() and 1 <= int(response.choices[0].message.content) <= 10:
+                    return response.choices[0].message.content
         except Exception as e:
             print(f"Error during emotion detection: {str(e)}")
             return None
@@ -39,6 +42,26 @@ class SpeechAnalyzer:
         words = text.split()
         words_per_minute = len(words) / (duration.total_seconds() / 60)
         return round(words_per_minute, 2)
+    
+    def summarize_transcript(self, transcript):
+        """Generate AI summary using GPT-4."""
+        try:
+            prompt = """
+            Provide a 1 sentence summary of the transcript.
+            """
+            
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": f'You are an expert in teaching. Summarize the conversation: {transcript}'},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"Error generating suggestions: {str(e)}")
+            return None 
     
     def count_filler_words(self, text):
         """Count occurrences of filler words in the teacher's speech."""
@@ -60,12 +83,14 @@ class SpeechAnalyzer:
         speech_rate = self.analyze_speech_rate(teacher_text, duration)
         filler_words = self.count_filler_words(teacher_text)
         suggestions = self.generate_suggestions(transcript)
+        summary = self.summarize_transcript(transcript)
         
         return {
             "emotions": emotions,
             "speech_rate_wpm": speech_rate,
             "filler_words_count": filler_words,
-            "suggestions": suggestions
+            "suggestions": suggestions,
+            "summary": summary
         }
     
     def generate_suggestions(self, transcript):

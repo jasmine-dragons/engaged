@@ -34,6 +34,7 @@ export type Personality = {
 export type HistoricEntry = {
   analytics: Analytics;
   config: Personality[];
+  personalities?: string[];
   /** Do NOT use since it gets rounded in JS; use `simulation_id_str` instead */
   simulation_id: number;
   simulation_id_str: string;
@@ -54,6 +55,7 @@ export type Analytics =
       speech_rate_wpm: number;
       filler_words_count: Record<string, number>;
       suggestions: string;
+      summary?: string;
     };
 
 export async function getHistory(
