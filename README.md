@@ -19,9 +19,11 @@ _engagED_ simulates a classroom environment where teachers interact with AI-powe
 _engagED_ responds to natural teacher interactions in a virtual classroom setting, adjusting student behaviors based on teaching strategies. Just like in a real class, students may ask unexpected questions, lose focus, or react differently depending on the teacher’s approach. At the end of each session, _engagED_ provides a performance dashboard, offering insights into key performance metrics and providing feedback for improvement.
 
 ## How we built it
-_engagED_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below. 
+
+_engagED_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below.
 
 ### Design and Wireframing
+
 <img src="https://github.com/user-attachments/assets/dc7576bc-e58f-4868-b769-94d4d9266c97" alt="drawing" width="500"/>
 <img src="https://github.com/user-attachments/assets/6c10abff-5699-42a9-800c-e3b1f50f03ae" alt="drawing" width="500"/>
 <img src="https://github.com/user-attachments/assets/53af2792-a776-4cf8-9a06-de68f87da23d" alt="drawing" width="500"/>
@@ -32,20 +34,19 @@ _engagED_ was built by a mix of haxers from various backgrounds in frontend and 
 ![image](https://github.com/user-attachments/assets/e406cdbf-61e2-4f4f-95de-2e75e09ab974)
 _Our tech flow_
 
-The frontend was build in [React](https://react.dev/) and [Typescript](https://www.typescriptlang.org/) using [Next.js](https://nextjs.org/) as our frontend framework in order to maintain a structured codebase and fast loading times. The backend server was built in [Python](https://www.python.org/) and [FastAPI](https://fastapi.tiangolo.com/), allowing us to utilize a variety APIs such as [ElevenLabs](https://elevenlabs.io/), [OpenAI](https://openai.com/), [Groq](https://groq.com/), and [LangChain](https://www.langchain.com/). A websocket connection was also utilized between the frontend and backend in order to constantly stream audio data to the agents and LLMs, allowing for low latency. The database was created in [MongoDB](https://www.mongodb.com/) in order to store user sessions in a structured manner. 
+The frontend was build in [React](https://react.dev/) and [Typescript](https://www.typescriptlang.org/) using [Next.js](https://nextjs.org/) as our frontend framework in order to maintain a structured codebase and fast loading times. The backend server was built in [Python](https://www.python.org/) and [FastAPI](https://fastapi.tiangolo.com/), allowing us to utilize a variety APIs such as [ElevenLabs](https://elevenlabs.io/), [OpenAI](https://openai.com/), [Groq](https://groq.com/), and [LangChain](https://www.langchain.com/). A websocket connection was also utilized between the frontend and backend in order to constantly stream audio data to the agents and LLMs, allowing for low latency. The database was created in [MongoDB](https://www.mongodb.com/) in order to store user sessions in a structured manner.
 
 ![image](https://github.com/user-attachments/assets/678ddf3b-1be3-4b51-9f38-f948ea1f00a8)
 _Client logic flow_
 
-Diving deeper into our client logic, there are a lot of moving parts that bring _engagED_ together! We begin with the **teacher** user instructing the virtual class, and the **AI students** listening in. We then utilize OpenAI's [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) in concurrence with Groq in order to convert this instruction to a text transcript. We then feed this transcript back into the AI Agents in order to provide them context and prompt them to chime in if neccesary. Each agent was build with [LangChain Agents](https://python.langchain.com/v0.1/docs/modules/agents/) and Groq to be able to respond to conversation with low latency. Initially, we ran each agent in parallel, but soon realized that this would cause them to talk over one another as they responded to the teacher. Thus, we implemented a round-robin algorithm between each agent and the teacher in order to minimize conflicts. 
+Diving deeper into our client logic, there are a lot of moving parts that bring _engagED_ together! We begin with the **teacher** user instructing the virtual class, and the **AI students** listening in. We then utilize OpenAI's [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) in concurrence with Groq in order to convert this instruction to a text transcript. We then feed this transcript back into the AI Agents in order to provide them context and prompt them to chime in if neccesary. Each agent was build with [LangChain Agents](https://python.langchain.com/v0.1/docs/modules/agents/) and Groq to be able to respond to conversation with low latency. Initially, we ran each agent in parallel, but soon realized that this would cause them to talk over one another as they responded to the teacher. Thus, we implemented a round-robin algorithm between each agent and the teacher in order to minimize conflicts.
 
-Then, we utilize ElvenLabs' [text to speech API](https://elevenlabs.io/docs/api-reference/text-to-speech/convert) in order to convert the agent's conversational input into speech, and played this in the virtual classroom setting. The speech from the teacher is now combined with the latest transcripts and messages from the AI Agents to create a master transcript. This is now used as the context provided to the AI Agents for them to respond to the teacher. 
+Then, we utilize ElvenLabs' [text to speech API](https://elevenlabs.io/docs/api-reference/text-to-speech/convert) in order to convert the agent's conversational input into speech, and played this in the virtual classroom setting. The speech from the teacher is now combined with the latest transcripts and messages from the AI Agents to create a master transcript. This is now used as the context provided to the AI Agents for them to respond to the teacher.
 
 Once the session is ended, the master transcript is sent to OpenAI to summarize and provide analytics data for teachers. This is then displayed to the teachers in the following page. The data is then stored with their unique session id in MongoDB for retrieval and visibility later.
 
 ![image](https://github.com/user-attachments/assets/1756c555-4835-47e7-bdb4-fc44dc4b5589)
-_Our tech stack__
-
+_Our tech stack_
 
 ## Challenges we ran into
 
@@ -55,31 +56,40 @@ Low-latency Interaction: We had to optimize AI interactions to maintain near-rea
 
 Agent Coordination: AI student agents needed to understand each other's context and avoid talking over one another. Synchronization and maintaining conversational order proved to be a complex challenge. We used a mixture probabilistic activations for each agent, a cooldown period specific to each agent, and locks to ensure a clean virtual classroom experience.
 
-Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts. 
+Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts.
+
+Audio Formats: Both the [Web MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API) and the audio-generation services have limited information on how it streams "chunks" of audio. For example, one API returned base64-encoded data that consistently started with the same few octets, but looking them up as magic numbers turned up dry. We ultimately discovered that these chunks had to be concatenated into one single audio file—only the first chunk had the necessary header data needed to make the file playable. However, this was not feasible for generating instant responses and transcripts in response to the user's microphone audio. Our initial solution for this case was to accumulate chunks, but this led to large contexts for the AI models. Our breakthrough came when we used a [deprecated method](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor) from the Web Audio API to collect raw audio samples, and manually formatted each chunk as a WAV file so that each chunk could be enjoyed in isolation.
 
 ## Accomplishments that we're proud of
+
 There are many things we are proud of:
-1) Developing Multi-Agent AI Personalities – We successfully implemented multiple AI-powered student personas that react uniquely to teacher input, creating a diverse and realistic classroom dynamic.
-2) Achieving Real-Time, Low-Latency AI Conversations – By leveraging Groq for rapid inference and optimizing our WebSocket connections, we were able to ensure smooth and natural interactions between teachers and AI students.
-3) Building an AI-Driven Performance Analytics Dashboard – We implemented a system that provides teachers with personalized feedback, including engagement scores, response effectiveness, and classroom management insights.
-4) Creating a Structured Data Storage System – By designing a scalable MongoDB database, we ensured that teachers can access their past sessions, review feedback, and track their progress over time.
-5) Creating an interactive UI/UX thats super aesthetically pleasing!
+
+1. Developing Multi-Agent AI Personalities – We successfully implemented multiple AI-powered student personas that react uniquely to teacher input, creating a diverse and realistic classroom dynamic.
+2. Achieving Real-Time, Low-Latency AI Conversations – By leveraging Groq for rapid inference and optimizing our WebSocket connections, we were able to ensure smooth and natural interactions between teachers and AI students.
+3. Building an AI-Driven Performance Analytics Dashboard – We implemented a system that provides teachers with personalized feedback, including engagement scores, response effectiveness, and classroom management insights.
+4. Creating a Structured Data Storage System – By designing a scalable MongoDB database, we ensured that teachers can access their past sessions, review feedback, and track their progress over time.
+5. Creating an interactive UI/UX thats super aesthetically pleasing!
 
 ## What we learned
+
 We learned many things:
-1) We learned that achieving real-time, natural AI interaction is challenging, especially when handling multiple AI agents in parallel. Implementing Groq for low-latency processing and refining our round-robin approach helped us create smoother conversations.
-2) Striking the right balance between accurate student simulations and efficient AI processing was crucial. Overloading the system with complex, simultaneous AI interactions led to chaotic responses, which we mitigated through probabilistic agent activations.
-3) Integrating Whisper AI for speech recognition and ElevenLabs for AI-generated speech gave us firsthand experience in handling continuous audio streams with minimal delay. We had to refine our approach to ensure clarity and prevent misinterpretations.
-4) Since each training session generates a large amount of structured and unstructured data, we learned best practices for storing, retrieving, and analyzing this data efficiently using MongoDB.
-5) While AI can provide powerful insights, we realized that clear, intuitive dashboards and actionable feedback are essential for users to gain value from the system. Simplifying the UI/UX to present feedback in a digestible format was a major learning experience.
+
+1. We learned that achieving real-time, natural AI interaction is challenging, especially when handling multiple AI agents in parallel. Implementing Groq for low-latency processing and refining our round-robin approach helped us create smoother conversations.
+2. Striking the right balance between accurate student simulations and efficient AI processing was crucial. Overloading the system with complex, simultaneous AI interactions led to chaotic responses, which we mitigated through probabilistic agent activations.
+3. Integrating Whisper AI for speech recognition and ElevenLabs for AI-generated speech gave us firsthand experience in handling continuous audio streams with minimal delay. We had to refine our approach to ensure clarity and prevent misinterpretations.
+4. Since each training session generates a large amount of structured and unstructured data, we learned best practices for storing, retrieving, and analyzing this data efficiently using MongoDB.
+5. While AI can provide powerful insights, we realized that clear, intuitive dashboards and actionable feedback are essential for users to gain value from the system. Simplifying the UI/UX to present feedback in a digestible format was a major learning experience.
 
 ## What's next for _engagED_
+
 There are many aspects of _engagED_ that we could improve:
-1) Using a real-world dataset of teacher-student interactions to fine-tune the LLM model would be beneficial to getting more realistic practice for teachers.
-2) Leveraging video analytics to understand expressions and hand-movements of the teacher would be useful for giving them more insightful feedback.
-3) Implementing visual-language models to understand content that is shared via "screenshare" could help provide useful context for the LLM when it is generating feedback.
-4) Creating a feature for teachers to customize the student persona.
-5) Having more agents in the meeting & figuring out how to better implement student-student interactions as well to best simulate the classroom enviorment.
+
+1. Using a real-world dataset of teacher-student interactions to fine-tune the LLM model would be beneficial to getting more realistic practice for teachers.
+2. Leveraging video analytics to understand expressions and hand-movements of the teacher would be useful for giving them more insightful feedback.
+3. Implementing visual-language models to understand content that is shared via "screenshare" could help provide useful context for the LLM when it is generating feedback.
+4. Creating a feature for teachers to customize the student persona.
+5. Having more agents in the meeting & figuring out how to better implement student-student interactions as well to best simulate the classroom enviorment.
+
 ---
 
 ### Setup
