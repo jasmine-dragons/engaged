@@ -1,4 +1,4 @@
-# 🌲 TreeHacks 2025: EngagED - AI-Powered Classroom Simulation for Smarter Teacher Training
+# EngagED - AI-Powered Classroom Simulation for Smarter Teacher Training
 
 ## Inspiration
 Every day, teachers step into classrooms filled with students who have different personalities, learning styles, and challenges. Some students are eager to participate, others are easily distracted, and a few might resist authority altogether. A teacher's ability to navigate these interactions can mean the difference between an engaging classroom and a chaotic one.
