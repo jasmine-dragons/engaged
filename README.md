@@ -58,13 +58,20 @@ Agent Coordination: AI student agents needed to understand each other's context 
 Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts. 
 
 ## Accomplishments that we're proud of
-Overall, we were able to accomplish a lot and implement a lot of features for users: 
-- multiple AI agents
-- Analytics for users
-- AI speech generation and personalities
-- 
+There are many things we are proud of:
+1) Developing Multi-Agent AI Personalities – We successfully implemented multiple AI-powered student personas that react uniquely to teacher input, creating a diverse and realistic classroom dynamic.
+2) Achieving Real-Time, Low-Latency AI Conversations – By leveraging Groq for rapid inference and optimizing our WebSocket connections, we were able to ensure smooth and natural interactions between teachers and AI students.
+3) Building an AI-Driven Performance Analytics Dashboard – We implemented a system that provides teachers with personalized feedback, including engagement scores, response effectiveness, and classroom management insights.
+4) Creating a Structured Data Storage System – By designing a scalable MongoDB database, we ensured that teachers can access their past sessions, review feedback, and track their progress over time.
+5) Creating an interactive UI/UX thats super aesthetically pleasing!
 
 ## What we learned
+We learned many things:
+1) We learned that achieving real-time, natural AI interaction is challenging, especially when handling multiple AI agents in parallel. Implementing Groq for low-latency processing and refining our round-robin approach helped us create smoother conversations.
+2) Striking the right balance between accurate student simulations and efficient AI processing was crucial. Overloading the system with complex, simultaneous AI interactions led to chaotic responses, which we mitigated through probabilistic agent activations.
+3) Integrating Whisper AI for speech recognition and ElevenLabs for AI-generated speech gave us firsthand experience in handling continuous audio streams with minimal delay. We had to refine our approach to ensure clarity and prevent misinterpretations.
+4) Since each training session generates a large amount of structured and unstructured data, we learned best practices for storing, retrieving, and analyzing this data efficiently using MongoDB.
+5) While AI can provide powerful insights, we realized that clear, intuitive dashboards and actionable feedback are essential for users to gain value from the system. Simplifying the UI/UX to present feedback in a digestible format was a major learning experience.
 
 ## What's next for _engagED_
 There are many aspects of _engagED_ that we could improve:
