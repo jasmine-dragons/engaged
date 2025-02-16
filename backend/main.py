@@ -1,5 +1,6 @@
 from typing import Dict
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, WebSocket
+from datetime import datetime
 import uvicorn
 from typing import Dict, List
 import os
@@ -8,12 +9,12 @@ from groq import Groq
 from student_bots import StudentBotManager
 from texttospeech import text_to_speech
 from audio_processor import AudioProcessor
+from fastapi import FastAPI, WebSocket
 
 load_dotenv()
 
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-VOICEGAIN_API_KEY = "qHRJ/HoZCoS0ITNOYQo8W+7jObCKZOr6qMozXj5fzBE=" # config['voicegain_credentials'][0]['api_key'] 
 
 master_transcript : List[Dict[str, str]] = []
 
@@ -46,16 +47,18 @@ async def websocket_endpoint(websocket: WebSocket):
                     "speaker": response["speaker"],
                     "timestamp": datetime.now(),
                 })
-                audio_stream = text_to_speech(response["text"], resonse["voice_id"])
+                audio_stream = text_to_speech(response["text"], response["voice_id"])
                 await websocket.send_bytes(audio_stream)
     except Exception as e:
         print(f"WebSocket error: {e}")
 
     finally:
-        # Merge all audio segments into one final WAV file
-        final_audio = sum(AudioProcessor.buffer)  # Concatenate segments
-        final_audio.export("final_output.wav", format="wav")
-        print("Final audio saved as final_output.wav")
+        # Save the final combined audio to WAV file
+        final_audio_path = audio_processor.get_full_audio("final_output.wav")
+        if final_audio_path:
+            print(f"Final audio saved as {final_audio_path}")
+        else:
+            print("No audio was recorded")
 
         await websocket.close()
 
