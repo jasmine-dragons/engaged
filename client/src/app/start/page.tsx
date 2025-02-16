@@ -47,6 +47,7 @@ export default function Start() {
           className={styles.video}
           ref={screenPreviewRef}
           playsInline
+          style={{ display: sharing ? "" : "none" }}
         ></video>
       </div>
       <div className={styles.buttons}>
