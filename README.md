@@ -58,11 +58,16 @@ Agent Coordination: AI student agents needed to understand each other's context 
 Analytics APIs: We wanted to utilize a dedicated API in order to give users analytics on their sessions, but had a hard time finding options that were either sufficiently documented or free to use for this task. As such, we decided to utilize OpenAI's capabilities in order to analyze our transcripts. 
 
 ## Accomplishments that we're proud of
+Overall, we were able to accomplish a lot and implement a lot of features for users: 
+- multiple AI agents
+- Analytics for users
+- AI speech generation and personalities
+- 
 
 ## What we learned
 
 ## What's next for _engagED_
-There are many aspects of engagED that we could improve:
+There are many aspects of _engagED_ that we could improve:
 1) Using a real-world dataset of teacher-student interactions to fine-tune the LLM model would be beneficial to getting more realistic practice for teachers.
 2) Leveraging video analytics to understand expressions and hand-movements of the teacher would be useful for giving them more insightful feedback.
 3) Implementing visual-language models to understand content that is shared via "screenshare" could help provide useful context for the LLM when it is generating feedback.
