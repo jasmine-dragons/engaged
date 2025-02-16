@@ -21,19 +21,32 @@ export async function startSim(
 }
 
 export type HistoricEntry = {
-  analytics: Record<string, number>;
-  audio: string;
+  analytics: Analytics;
   config: string[];
+  /** Do NOT use since it gets rounded in JS; use `simulation_id_str` instead */
+  simulation_id: number;
+  simulation_id_str: string;
   transcript: {
+    /** `teacher` for teacher */
     speaker: string;
     text: string;
     timestamp: string;
-  };
+  }[];
   user_id: number;
+  timestamp: string;
 };
 
+export type Analytics =
+  | { error: string }
+  | {
+      emotions: string;
+      speech_rate_wpm: number;
+      filler_words_count: Record<string, number>;
+      suggestions: string;
+    };
+
 export async function getHistory(
-  userId: number
+  userId: string
 ): Promise<{ data: HistoricEntry[] }> {
   return fetch(`${backendBaseUrl}/history/${userId}?_=${Date.now()}`).then(
     (r) => r.json()
@@ -41,13 +54,16 @@ export async function getHistory(
 }
 
 export async function getSimulation(
-  simulationId: number
+  simulationId: string
 ): Promise<{ data: HistoricEntry | false }> {
   return fetch(`${backendBaseUrl}/sim/${simulationId}`).then((r) => r.json());
 }
 
-export async function getAnalytics(): Promise<unknown> {
-  return fetch(`${backendBaseUrl}/analytics?_=${Date.now()}`).then((r) =>
+export async function getAnalytics(): Promise<{
+  simId: string;
+  analytics: Analytics;
+}> {
+  return fetch(`${backendBaseUrl}/analytics`, { method: "POST" }).then((r) =>
     r.json()
   );
 }

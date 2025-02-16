@@ -32,7 +32,7 @@ mongo_client = MongoClient(MONGO_URL)
 database = mongo_client.get_database("treehacks-2025")
 sessions = database.get_collection("user-sessions")
 
-user_id = 1
+user_id = 2
 simulation_id = 1
 
 VOICEGAIN_API_KEY = os.getenv("VOICEGAIN_API_KEY")
@@ -115,7 +115,7 @@ async def start_sim(request: Request):
 async def get_history(user_id: int):
     """Get the session history from MongoDB."""
     history = list(sessions.find({"user_id": user_id}, {'_id': 0}))
-    return {"data": history}
+    return {"data": [{**d, "simulation_id_str": str(d["simulation_id"])} for d in history]}
 
 @app.get("/sim/{simulation_id}")
 async def get_sim(simulation_id: int):
@@ -123,8 +123,10 @@ async def get_sim(simulation_id: int):
     simulation = list(sessions.find({"simulation_id": simulation_id}, {"_id": 0}))
     return {"data": simulation[0] if len(simulation) > 0 else False}
 
-@app.get("/analytics")
+@app.post("/analytics")
 async def get_analytics(): 
+    import random
+
     global simulation_id
 
 
@@ -151,18 +153,24 @@ async def get_analytics():
 
     configs = [x.personality for x in student_bot_manager.students]
 
-    sessions.insert_one({
+    simulation_id = random.randint(0, (2**63) - 1)
+
+    sim_id = simulation_id
+    new_object = {
             "user_id": user_id,
             "transcript": master_transcript,
             "simulation_id": simulation_id,
             "analytics": analysis, 
             # "audio": encoding,
             "config": configs,
-        })
+            "timestamp": datetime.now(),
+        }
+    print('INSERT', new_object)
+    sessions.insert_one(new_object)
 
     simulation_id += 1
 
-    return analysis
+    return {"simId": str(sim_id), "analysis": analysis}
 
     # # start new analytics session
 

@@ -9,12 +9,12 @@ class SpeechAnalyzer:
     def __init__(self, api_key):
         self.client = OpenAI(api_key=api_key)
     
-    def extract_teacher_speech(self, transcript, teacher_label="Teacher"):
+    def extract_teacher_speech(self, transcript, teacher_label="teacher"):
         """Extract only the teacher's speech from a structured transcript."""
         teacher_text = []
         for entry in transcript:
             if entry["speaker"] == teacher_label:
-                teacher_text.append(entry.get("text", "").strip())
+                teacher_text.append((entry.get("text", "") or "").strip())
         return " ".join(teacher_text)
     
     def detect_emotions(self, text):
@@ -34,10 +34,10 @@ class SpeechAnalyzer:
     
     def analyze_speech_rate(self, text, duration):
         """Calculate speech rate (words per minute)."""
-        if not text or duration <= 0:
+        if not text or duration.total_seconds() <= 0:
             return 0
         words = text.split()
-        words_per_minute = len(words) / (duration / 60)
+        words_per_minute = len(words) / (duration.total_seconds() / 60)
         return round(words_per_minute, 2)
     
     def count_filler_words(self, text):

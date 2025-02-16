@@ -44,12 +44,12 @@ type ResultsPageProps = {
 };
 export default async function ResultsPage({ params }: ResultsPageProps) {
   const { simId } = await params;
-  const { data } = await getSimulation(+simId);
+  const { data } = await getSimulation(simId);
 
   if (!data) {
     notFound();
   }
-  console.log(data)
+  console.log(data);
 
   return (
     <div className="container">
@@ -58,62 +58,74 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
         <div className={styles.transcriptWrapper}>
           <h2>Transcript</h2>
           <ul className={styles.transcript}>
-            {result.transcript.map(({ who, what }, i) => (
+            {data.transcript.map(({ text, speaker, timestamp }, i) => (
               <li
                 className={`${styles.messageItem} ${
-                  who ? styles.messageLeft : styles.messageRight
+                  speaker === "teacher"
+                    ? styles.messageRight
+                    : styles.messageLeft
                 }`}
                 style={{ animationDelay: `${(i + 1) * 50}ms` }}
                 key={i}
               >
-                {who ? <div className={styles.who} /> : null}
-                <div className={styles.message}>{what}</div>
+                {speaker !== "teacher" ? <div className={speaker} /> : null}
+                <div className={styles.message}>{text}</div>
               </li>
             ))}
           </ul>
         </div>
         <div className={styles.sidebar}>
-          <h2>Stats</h2>
-          <div className={styles.stats}>
-            <Stat
-              label="talk speed"
-              count={result.ratings.talkSpeed}
-              units=" wpm"
-              min={100}
-              avg={135}
-              max={180}
-              animate
-            />
-            <Stat
-              label="emotion"
-              count={result.ratings.emotion}
-              fixed={1}
-              min={1}
-              avg={3}
-              max={5}
-              animate
-            />
-            <Stat
-              label="talk time ratio"
-              count={result.ratings.talkTimeRatio}
-              units="%"
-              min={60}
-              avg={77.5}
-              max={90}
-              animate
-            />
-            <Stat
-              label="filler words"
-              count={result.ratings.fillerWords}
-              min={0}
-              avg={7.5}
-              max={15}
-              animate
-            />
-          </div>
-          <h2>Summary</h2>
-          <p>{result.summary}</p>
-          <p className={styles.timestamp}>{dateFormat.format(result.time)}</p>
+          {"error" in data.analytics ? (
+            <p>Analysis failed: {data.analytics.error}</p>
+          ) : (
+            <>
+              <h2>Stats</h2>
+              <div className={styles.stats}>
+                <Stat
+                  label="talk speed"
+                  count={data.analytics.speech_rate_wpm}
+                  units=" wpm"
+                  min={100}
+                  avg={135}
+                  max={180}
+                  animate
+                />
+                <Stat
+                  label="emotion"
+                  count={result.ratings.emotion}
+                  fixed={1}
+                  min={1}
+                  avg={3}
+                  max={5}
+                  animate
+                />
+                <Stat
+                  label="talk time ratio"
+                  count={result.ratings.talkTimeRatio}
+                  units="%"
+                  min={60}
+                  avg={77.5}
+                  max={90}
+                  animate
+                />
+                <Stat
+                  label="filler words"
+                  count={Object.values(
+                    data.analytics.filler_words_count
+                  ).reduce((a, b) => a + b, 0)}
+                  min={0}
+                  avg={7.5}
+                  max={15}
+                  animate
+                />
+              </div>
+              <h2>Suggestions</h2>
+              <p>{data.analytics.suggestions}</p>
+            </>
+          )}
+          <p className={styles.timestamp}>
+            {dateFormat.format(new Date(data.timestamp))}
+          </p>
         </div>
       </div>
     </div>

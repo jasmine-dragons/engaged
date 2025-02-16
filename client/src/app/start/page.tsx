@@ -119,7 +119,9 @@ export default function Start() {
               className="button"
               onClick={async () => {
                 managerRef.current?.kill();
-                redirect("/results/1139475891", RedirectType.push);
+                const { simId, analytics } = await getAnalytics();
+                console.log(analytics);
+                redirect(`/results/${simId}`, RedirectType.push);
               }}
             >
               End Meeting
