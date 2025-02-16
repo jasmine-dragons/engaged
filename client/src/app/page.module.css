@@ -106,7 +106,8 @@
   animation: appear 0.5s 0.3s backwards;
 }
 
-:global(.blob-wrapper):has(~ .page) {
+:global(.blob-wrapper):has(~ .page),
+:global(.nav):has(~ .page) {
   display: none;
 }
 

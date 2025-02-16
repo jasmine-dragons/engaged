@@ -110,12 +110,29 @@
   }
 }
 
-.heading {
+.instruction {
   animation: appear 0.5s;
 }
-.instruction {
+.buttons {
   animation: appear 0.5s 0.1s backwards;
 }
-.buttons {
-  animation: appear 0.5s 0.2s backwards;
+
+.spinner {
+  border: 3px solid transparent;
+  border-radius: 50%;
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-top-color: white;
+  border-right-color: white;
+  margin-left: -5px;
+  animation: spin 0.5s infinite linear;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -8,7 +8,8 @@ export type Manager = {
 
 export async function makeManager(
   webcamPreview: HTMLVideoElement,
-  screenPreview: HTMLVideoElement
+  screenPreview: HTMLVideoElement,
+  onClose: () => void
 ): Promise<Manager> {
   const audioContext = new AudioContext();
 
@@ -26,6 +27,7 @@ export async function makeManager(
 
   ws.addEventListener("close", (event) => {
     console.log("WebSocket closed:", event.code, event.reason);
+    onClose();
   });
 
   ws.addEventListener("message", async (e: MessageEvent<ArrayBuffer>) => {

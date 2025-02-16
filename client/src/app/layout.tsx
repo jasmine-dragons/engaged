@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const inter = Geist({
   subsets: ["latin"],
@@ -22,6 +23,10 @@ export default function RootLayout({
         <div className="blob-wrapper">
           <div className="blob"></div>
         </div>
+        <nav className="nav">
+          <Link href="/setup">Get Started</Link>
+          <Link href="/history">History</Link>
+        </nav>
         {children}
       </body>
     </html>

@@ -62,7 +62,7 @@ export default function Setup() {
 
   return (
     <div className="container">
-      <h1 className={`heading ${styles.heading}`}>Set up your classroom.</h1>
+      <h1 className="heading">Set up your classroom.</h1>
       <p className={styles.instruction}>
         Start with one of our classroom templates.
       </p>

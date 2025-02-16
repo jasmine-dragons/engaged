@@ -26,3 +26,7 @@
   height: 40px;
   border-radius: 5px;
 }
+
+:global(.nav):has(~ .page) {
+  display: none;
+}
