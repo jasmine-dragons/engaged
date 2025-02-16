@@ -19,7 +19,7 @@ _engagED_ simulates a classroom environment where teachers interact with AI-powe
 _engagED_ responds to natural teacher interactions in a virtual classroom setting, adjusting student behaviors based on teaching strategies. Just like in a real class, students may ask unexpected questions, lose focus, or react differently depending on the teacher’s approach. At the end of each session, _engagED_ provides a performance dashboard, offering insights into key performance metrics and providing feedback for improvement.
 
 ## How we built it
-_engaged_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below. 
+_engagED_ was built by a mix of haxers from various backgrounds in frontend and backend roles. We began by wireframing and designing our user workflows, and then iterated upon these designs to create a seamless experience. We used a variety of cutting-edge technologies in this platform, which are outlined below. 
 
 ### Design and Wireframing
 ![image](https://github.com/user-attachments/assets/dc7576bc-e58f-4868-b769-94d4d9266c97)
