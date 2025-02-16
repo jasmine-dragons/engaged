@@ -125,3 +125,8 @@
 .retry:hover {
   text-decoration: underline;
 }
+
+.summary {
+  margin-top: -10px;
+  animation: appear 0.5s;
+}

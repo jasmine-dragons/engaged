@@ -55,6 +55,7 @@ export type Analytics =
       speech_rate_wpm: number;
       filler_words_count: Record<string, number>;
       suggestions: string;
+      summary?: string;
     };
 
 export async function getHistory(

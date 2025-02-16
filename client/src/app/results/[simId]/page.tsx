@@ -23,6 +23,9 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
   return (
     <div className="container">
       <h1 className="heading">Results</h1>
+      {!("error" in data.analytics) && data.analytics.summary ? (
+        <p className={styles.summary}>{data.analytics.summary}</p>
+      ) : null}
       <div className={styles.wrapper}>
         <div className={styles.transcriptWrapper}>
           <h2>Transcript</h2>
@@ -73,24 +76,6 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
                   min={100}
                   avg={135}
                   max={180}
-                  animate
-                />
-                <Stat
-                  label="emotion"
-                  count={4}
-                  fixed={1}
-                  min={1}
-                  avg={3}
-                  max={5}
-                  animate
-                />
-                <Stat
-                  label="talk time ratio"
-                  count={80}
-                  units="%"
-                  min={60}
-                  avg={77.5}
-                  max={90}
                   animate
                 />
                 <Stat

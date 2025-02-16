@@ -22,7 +22,9 @@ export function HistoryItem({ analysis, style }: HistoryItemProps) {
           {dateFormat.format(new Date(analysis.timestamp))}
         </p>
         <p className={styles.summary}>
-          {"error" in analysis.analytics ? "" : analysis.analytics.suggestions}
+          {"error" in analysis.analytics
+            ? ""
+            : analysis.analytics.summary ?? analysis.analytics.suggestions}
         </p>
       </div>
       {"error" in analysis.analytics ? null : (
@@ -35,15 +37,6 @@ export function HistoryItem({ analysis, style }: HistoryItemProps) {
             avg={135}
             max={180}
             rightAlign
-          />
-          <Stat label="emotion" count={4} fixed={1} min={1} avg={3} max={5} />
-          <Stat
-            label="talk time ratio"
-            count={80}
-            units="%"
-            min={60}
-            avg={77.5}
-            max={90}
           />
           <Stat
             label="filler words"
