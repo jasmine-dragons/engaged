@@ -20,6 +20,7 @@ from fastapi import FastAPI, Request
 import uvicorn
 from typing import Dict, List
 from analytics import SpeechAnalyzer
+import time
 
 load_dotenv()
 
@@ -56,12 +57,11 @@ async def websocket_endpoint(websocket: WebSocket):
     start_time = datetime.now()
     try:
         while True:
-            print(master_transcript)
             audio_chunk = await websocket.receive_bytes()
             audio_processor.process_chunk(audio_chunk)
             transcription = await audio_processor.transcribe_latest()
 
-            print("Transcription: ", transcription)
+            print("Transcription:", transcription)
 
             master_transcript.append({
                 "text": transcription,
@@ -78,6 +78,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 })
                 audio_stream = text_to_speech(response["text"], response["voice_id"])
                 await websocket.send_bytes(audio_stream)
+            time.sleep(3)
+
+            
     except Exception as e:
         print(f"WebSocket error: {e}")
 

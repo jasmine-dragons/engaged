@@ -1,96 +1,82 @@
-from cmd import PROMPT
 import os
-from groq import Groq
+import io
+from typing import List, Optional
 from dotenv import load_dotenv
-import subprocess
+from pydub import AudioSegment
+from groq import Groq
 
+# Load environment variables
 load_dotenv()
 
 class AudioProcessor:
     def __init__(self):
-        self.buffer = []  # Store raw audio chunks
-        self.groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        self.chunk_count = 0
+        """Initialize the audio processor"""
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("Missing GROQ_API_KEY in environment variables.")
+        
+        self.groq_client = Groq(api_key=api_key)
+        self.combined_audio: bytes = b''  # Store continuously concatenated audio
 
-    def process_chunk(self, audio_chunk):
-        """Store a raw audio chunk"""
-        # Save chunk to a temporary file
-        print(type(audio_chunk))
-        chunk_filename = f"temp_chunk_{self.chunk_count}.webm"
-        with open(chunk_filename, 'wb') as f:
-            f.write(audio_chunk)
-        self.buffer.append(chunk_filename)
-        self.chunk_count += 1
+    def process_chunk(self, chunk: bytes):
+        """Process an incoming audio chunk"""
+        if chunk:
+            # Continuously concatenate chunks to maintain WebM structure
+            if not self.combined_audio:
+                self.combined_audio = chunk  # First chunk contains header
+            else:
+                self.combined_audio += chunk
 
-    async def transcribe_latest(self):
+    async def transcribe_latest(self) -> Optional[str]:
         """Transcribe the latest audio chunk"""
-        if len(self.buffer) == 0:
+        if not self.combined_audio:
             return None
-            
-        # Get the latest chunk filename
-        latest_chunk = self.buffer[-1]
         
         try:
-            # Transcribe using the chunk file
-            with open(latest_chunk, "rb") as f:
-                transcription = self.groq_client.audio.transcriptions.create(
-                    file=(latest_chunk, f.read()),
-                    model="distil-whisper-large-v3-en",
-                    prompt="Transcribe the following audio. If you cannot understand the audio, respond with 'I'm sorry, I could not understand the audio.'",
-                    response_format="json",
-                    language="en",
-                    temperature=0.0
-                )
+            print("[DEBUG] Transcribing audio...")
+            # Create a file-like object from the combined audio
+            audio_file = io.BytesIO(self.combined_audio)
+            audio_file.name = "audio.webm"  # Required for format recognition
+
+            print("[DEBUG] Sending to Groq...")
+
+            # Transcribe using the WAV bytes
+            transcription = self.groq_client.audio.transcriptions.create(
+                file=("audio.webm", audio_file),
+                model="distil-whisper-large-v3-en",
+                prompt="Transcribe the following audio. If you cannot understand the audio, respond with 'I'm sorry, I could not understand the audio.'",
+                response_format="json",
+                language="en",
+                temperature=0.0
+            )
+
+            print("[DEBUG] Transcription:", transcription.text)
             return transcription.text
+
         except Exception as e:
             print(f"Error transcribing audio: {e}")
             return None
 
-    def get_full_audio(self, output_path="full_audio.webm"):
-        """Combine all audio chunks using ffmpeg"""
-        if len(self.buffer) == 0:
+    def get_full_audio(self) -> Optional[bytes]:
+        """Get the full concatenated audio"""
+        if not self.combined_audio:
             return None
             
         try:
-            # Create a file listing all chunks
-            concat_file = "concat_list.txt"
-            with open(concat_file, 'w') as f:
-                for chunk_file in self.buffer:
-                    f.write(f"file '{chunk_file}'\n")
+            # Convert the combined WebM to WAV
+            audio_file = io.BytesIO(self.combined_audio)
+            audio_file.name = "audio.webm"
             
-            # Use ffmpeg to concatenate the chunks
-            cmd = [
-                'ffmpeg',
-                '-f', 'concat',
-                '-safe', '0',
-                '-i', concat_file,
-                '-c', 'copy',  # Copy without re-encoding
-                '-y',  # Overwrite output file
-                output_path
-            ]
-            
-            process = subprocess.run(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-            
-            if process.returncode != 0:
-                print(f"FFmpeg error: {process.stderr.decode()}")
-                return None
-                
-            return output_path
+            audio_segment = AudioSegment.from_file(audio_file, format="webm")
+            wav_buffer = io.BytesIO()
+            audio_segment.export(wav_buffer, format="wav")
+            wav_buffer.seek(0)
+            return wav_buffer.read()
             
         except Exception as e:
-            print(f"Error combining audio chunks: {e}")
+            print(f"Error converting audio: {e}")
             return None
-            
-        finally:
-            # Clean up temporary files
-            if os.path.exists(concat_file):
-                os.remove(concat_file)
-            for chunk_file in self.buffer:
-                if os.path.exists(chunk_file):
-                    os.remove(chunk_file)
-            self.buffer = []
-            self.chunk_count = 0
+
+    def clear_buffer(self):
+        """Clear all audio buffers"""
+        self.combined_audio = b''

@@ -1,9 +1,7 @@
 import json
 from dotenv import load_dotenv
 import openai
-import librosa
 import numpy as np
-import webrtcvad
 import struct
 import re
 from collections import defaultdict
@@ -18,7 +16,6 @@ class SpeechAnalyzer:
         """Initialize the speech analyzer with OpenAI API key."""
         self.api_key = openai_api_key
         self.client = openai.OpenAI(api_key=openai_api_key)
-        self.vad = webrtcvad.Vad(3)
     
     def transcribe_audio(self, audio_path):
         """Transcribe audio using OpenAI Whisper API."""
