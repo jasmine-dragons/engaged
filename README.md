@@ -1,8 +1,10 @@
 # 🌲 TreeHacks 2025: Teacher Teacher - AI-Powered Classroom Simulation for Smarter Teacher Training
 
 ## Inspiration
+One of the biggest issues in education today is poor communication between teachers and students. The effects of this include poor perfomance for students and feelings of being burntout for teachers. We wanted to build something to address this. 
 
 ## What it does
+
 
 ## How we built it
 
