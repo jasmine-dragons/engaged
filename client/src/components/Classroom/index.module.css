@@ -29,6 +29,10 @@
   width: 100%;
 }
 
+.image {
+  object-fit: cover;
+}
+
 .name {
   font-weight: bold;
 }

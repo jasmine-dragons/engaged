@@ -16,7 +16,8 @@ a {
   text-decoration: none;
 }
 
-button {
+button,
+input {
   border: none;
   background: none;
   font: inherit;
@@ -31,13 +32,13 @@ button:not(:disabled) {
 }
 .blob {
   position: absolute;
-  top: -20px;
+  top: -40px;
   left: 20%;
   right: 20%;
   border-radius: 50px;
-  height: 20px;
+  height: 50px;
   background-image: linear-gradient(to right, #0097ff, #ce00ff);
-  filter: blur(30px);
+  filter: blur(40px);
 }
 
 .container {
