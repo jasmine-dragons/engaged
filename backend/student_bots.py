@@ -7,9 +7,7 @@ from datetime import datetime
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
 
-
 from pymongo import MongoClient
-
 
 load_dotenv()
 
